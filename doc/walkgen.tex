@@ -1,0 +1,214 @@
+\documentclass {article}
+
+\usepackage {amsmath}
+\usepackage{amssymb}
+
+\usepackage {amsfonts} % pour les lettres maths creuses \mathbb
+
+\newcommand\real{\mathbb{R}}
+\newcommand\x{\mathbf{x}}
+\newcommand\ddx{\mathbf{\ddot{x}}}
+\newcommand\step{\mathbf{s}}
+\newcommand\com{\mathbf{c}}
+\newcommand\z{z}
+\newcommand\zmp{\mathbf{zmp}}
+\newcommand\zmpref{\mathbf{zmp}_{ref}}
+\newcommand\zmprefx{\mathbf{zmp}_{ref, 0}}
+\newcommand\zmprefy{\mathbf{zmp}_{ref, 1}}
+
+\title {Cubic B-spline based walk generator}
+\author {Florent Lamiraux}
+
+\begin{document}
+\maketitle
+
+\section {Cubic B splines}
+
+Let
+\begin{itemize}
+\item $m$ be an integer bigger than 7,
+\item $t_0 \leq t_1 \leq \cdots \leq t_{m-1}$ an increasing sequence
+  of real values,
+\item $\x_{i} \in \real^2, 0\leq i \leq m-5$ control points in the
+  plane.
+\end{itemize}
+We define the curve $\x$ from interval $[t_3, t_{m-4}]$ in $\real^2$ as
+\begin{equation}\label{eq:com-1}
+  \x = \sum_{i=0}^{m-5}b_{i,3}\x_i
+\end{equation}\label{eq:b-spline}
+where $b_{i,3}$ are the basis function of cubic B splines:
+\begin{eqnarray*}
+b_{i,3} &=& (B_{i, i} \mathbb{I}_{[t_i, t_{i+1}]} + B_{i,i+1} \mathbb{I}_{[t_{i+1}, t_{i+2}]} +B_{i,i+2} \mathbb{I}_{[t_{i+2}, t_{i+3}]}+B_{i,i+3} \mathbb{I}_{[t_{i+3}, t_{i+4}]})\\
+&&i=0,\ldots, m-5
+\end{eqnarray*}
+with
+\begin{eqnarray*}
+B_{i, i} (t) &=& \frac{(t - t_i)^3}{(t_{i+3} - t_i)(t_{i+2} - t_i)(t_{i+1} - t_i)} \\
+B_{i,i+1} (t) &=& \frac{(t - t_i)^2(t_{i+2} - t)}{(t_{i+3} - t_i)(t_{i+2} - t_{i+1})(t_{i+2} - t_i)}+\frac{(t - t_i)(t_{i+3} - t)(t - t_{i+1})}{(t_{i+3} - t_i)(t_{i+3} - t_{i+1})(t_{i+2} - t_{i+1})}\\
+&&+\frac{(t_{i+4} - t)(t - t_{i+1})^2}{(t_{i+4} - t_{i+1})(t_{i+3} - t_{i+1})(t_{i+2} - t_{i+1})} \\
+B_{i,i+2} (t) &=& \frac{(t - t_i)(t_{i+3} - t)^2}{(t_{i+3} - t_i)(t_{i+3} - t_{i+1})(t_{i+3} - t_{i+2})}+\frac{(t_{i+4} - t)(t - t_{i+1})(t_{i+3} - t)}{(t_{i+4} - t_{i+1})(t_{i+3} - t_{i+1})(t_{i+3} - t_{i+2})}\\
+&&+\frac{(t_{i+4} - t)^2(t - t_{i+2})}{(t_{i+4} - t_{i+1})(t_{i+4} - t_{i+2})(t_{i+3} - t_{i+2})}\\
+B_{i,i+3} (t) &=& \frac{(t_{i+4} - t)^3}{(t_{i+4} - t_{i+1})(t_{i+4} - t_{i+2})(t_{i+4} - t_{i+3})}
+\end{eqnarray*}
+and for any interval $I$ of $\real$, $\mathbb{I}_{I}$ is the function equal to
+1 over $I$ and to $0$ outside $I$.
+
+\section {Walk generator}
+
+\subsection {Input}
+
+The input of the walk generator is a sequence of time-stamped steps defined
+as follows:
+\begin{enumerate}
+\item $p$ is a positive integer not smaller than 2,
+\item $\tau_0, \tau_1, \cdots, \tau_{2p-1}$ is an increasing sequence of real values,
+\item $\step_0, \step_1, \cdots, \step_{p-1}$ is a sequence of $p$ elements of
+  $\real^2$ representing the successive positions of the foot centers.
+\item $\com_{init}\in\real^2$ is the initial position of the center of mass at
+  time $\tau_0$,
+\item $\com_{final}\in\real^2$ is the final position of the center of mass at time
+  $\tau_p$.
+\end{enumerate}
+
+\subsection {Reference trajectory of the center of pressure}
+
+We define a reference trajectory of the center of pressure called
+$\zmpref$ as a continuous piecewise affine curve as follows:
+\begin{eqnarray*}
+\zmpref (\tau_0) &=& \com_{init} \\
+\zmpref (\tau_1) &=& \step_1 \\
+\zmpref (\tau_2) &=& \step_1 \\
+\zmpref (\tau_3) &=& \step_2 \\
+\vdots & \vdots & \vdots \\
+\zmpref (\tau_{2p-3}) &=& \step_{p-1} \\
+\zmpref (\tau_{2p-2}) &=& \step_{p-1} \\
+\zmpref (\tau_{2p-1}) &=& \com_{final}
+\end{eqnarray*}
+such that $\zmpref$ restricted to each interval $[\tau_i,\tau_{i+1}]$ with
+$i\in\{0,1,\cdots,2p-2\}$ is affine.
+
+\subsection {Trajectory of the center of mass}
+
+We restrict the trajectory of the center of mass to be a cubic-spline defined by
+Equation~(\ref{eq:b-spline}). As we want the whole center of mass trajectory to
+be defined on interval $[\tau_0, \tau_{2p-1}]$, we get the following relations
+between the various parameters:
+\begin {eqnarray*}
+m &=& 2p+6 \\
+t_3 &=& \tau_0 \\
+t_{m-4} &=& \tau_{2p-1} \\
+\end {eqnarray*}
+We need to fix the undefined knots. We arbitrarily set
+
+\centerline {
+  \parbox {.49\linewidth} {
+    \begin {eqnarray*}
+      t_0 &=& \tau_0 - 3 \\
+      t_1 &=& \tau_0 - 2 \\
+      t_2 &=& \tau_0 - 1 \\
+    \end {eqnarray*}
+  }
+  \parbox {.49\linewidth} {
+    \begin {eqnarray*}
+      t_{m-3} &=& \tau_{2p-1} + 1 \\
+      t_{m-2} &=& \tau_{2p-1} + 2 \\
+      t_{m-1} &=& \tau_{2p-1} + 3 \\
+    \end {eqnarray*}
+  }
+}
+
+\subsection {Trajectory of the center of pressure}
+
+Let $g$ be the gravity constant, and $z$ the constant height of the center
+of mass. By denoting $\omega = \sqrt {g/z}$, we get the simplified formula for
+the center of pressure of the robot:
+$$
+\zmp = \x - \frac{1}{\omega^2} \ddx
+$$
+By setting
+$$
+\z_{i,3} \triangleq b_{i,3} - \frac{1}{\omega^2} \ddot{b}_{i,3}
+$$
+we get an expression of the center of pressure with respect to the control
+points of the cubic B spline:
+\begin{equation}\label{eq:zmp-spline}
+\zmp = \sum_{i=0}^{m-5} \z_{i,3} \x_{i}= \sum_{i=0}^{2p-2} \z_{i,3} \x_{i}
+\end{equation}
+
+\subsection {Optimal control problem}
+
+We denote by $X=(\x_0, \cdots, \x_{m-5})$ the vector of control points.
+We wish to find the cubic B spline trajectory that minimizes the
+following cost function:
+\begin{equation}\label{eq:qudratic-cost}
+C(X) \triangleq \frac{1}{2}\int_{\tau_0}^{\tau_{2p-1}} \|\zmp (t) - \zmpref (t)\|^2 dt
+\end{equation}
+Let us expand this formula using~(\ref{eq:zmp-spline}):
+\begin{eqnarray*}
+C(X) &=& \frac{1}{2}\int_{\tau_0}^{\tau_{2p-1}} (\sum_{i=0}^{2p-2} \z_{i,3} \x_{i} - \zmpref (t))^T(\sum_{i=0}^{2p-2} \z_{i,3} \x_{i} - \zmpref (t)) dt\\
+&=& \frac{1}{2}\sum_{i=0}^{m-5}\sum_{j=0}^{m-5}\int_{\tau_0}^{\tau_{2p-1}} \z_{i,3} \z_{j,3} (t) dt\  \x_i^T\x_j - \sum_{i=0}^{m-5}\int_{\tau_0}^{\tau_{2p-1}}\z_{i,3}\zmpref^T(t)dt\ \x_i\\
+&&+ \int_{\tau_0}^{\tau_{2p-1}} \zmpref^T\zmpref (t)dt
+\end{eqnarray*}
+The cost function can be rewritten as
+\begin{eqnarray*}
+C(X) &=& \frac{1}{2}X^THX - b^T X + C_0
+\end{eqnarray*}
+with
+\begin{eqnarray*}
+H &=& \left(\begin{array}{c}
+\int_{\tau_0}^{\tau_{2p-1}} \z_{i,3} \z_{j,3}(t)dt\ I_2 \end{array}\right)_{i,j=0,\cdots,m-5} \\
+b &=& \left(\begin{array}{c}\int_{\tau_0}^{\tau_{2p-1}}\z_{i,3}\zmpref(t)dt\end{array}\right)_{i=0,\cdots,m-5}\\
+C_0 &=&\int_{\tau_0}^{\tau_{2p-1}} \zmpref^T\zmpref (t)dt
+\end{eqnarray*}
+$C(X)$ is the sum of two terms that respectively depend on the $x$ and $y$
+coordinates of the control points. Let us denote $\x_{i,0}$, $\x_{i,1}$ the abscissa and the ordinate of $\x_i$, $\zmprefx$, $\zmprefy$ the abscissa and ordinate of $\zmpref$, and let us define
+\begin{eqnarray*}
+  X_0 &=& (\x_{0,0},\cdots,\x_{m-5,0}) \\
+  X_1 &=& (\x_{0,1},\cdots,\x_{m-5,1}) \\
+  b_0 &=& \left(\begin{array}{c}\int_{\tau_0}^{\tau_{2p-1}}\z_{i,3}\ \zmprefx(t)dt\end{array}\right)_{i=0,\cdots,m-5}\\
+  b_1 &=& \left(\begin{array}{c}\int_{\tau_0}^{\tau_{2p-1}}\z_{i,3}\ \zmprefy(t)dt\end{array}\right)_{i=0,\cdots,m-5}\\
+  H_0 = H_1 &=& \left(\begin{array}{c}
+    \int_{\tau_0}^{\tau_{2p-1}} \z_{i,3} \z_{j,3}(t)dt \end{array}\right)_{i,j=0,\cdots,m-5} \\
+\end{eqnarray*}
+Then,
+\begin{eqnarray*}
+C(X) &=& \frac{1}{2}X_0^TH_0X_0 - b_0^T X_0 + \frac{1}{2}X_1^TH_1X_1 - b_1^T X_1 + C_0
+\end{eqnarray*}
+The problem can therefore be decomposed into two decoupled sub-problems, one in $X_0$ and the other one in $X_1$.
+
+\subsection {Computation of the coefficients}
+
+\begin{eqnarray*}
+z_{i,3} &=& (Z_{i, i} \mathbb{I}_{[t_i, t_{i+1}]} + Z_{i,i+1} \mathbb{I}_{[t_{i+1}, t_{i+2}]} +Z_{i,i+2} \mathbb{I}_{[t_{i+2}, t_{i+3}]}+Z_{i,i+3} \mathbb{I}_{[t_{i+3}, t_{i+4}]})\\
+&&i=0,\ldots, m-5
+\end{eqnarray*}
+with
+\begin{eqnarray*}
+Z_{i, i} (t) &=& B_{i,i} - \frac{1}{\omega^2} \ddot{B}_{i,i} \\
+Z_{i,i+1} (t) &=& B_{i,i+1} - \frac{1}{\omega^2} \ddot{B}_{i,i+1} \\
+Z_{i,i+2} (t) &=& B_{i,i+2} - \frac{1}{\omega^2} \ddot{B}_{i,i+2} \\
+Z_{i,i+3} (t) &=& B_{i,i+3} - \frac{1}{\omega^2} \ddot{B}_{i,i+3} \\
+\end{eqnarray*}
+Matrix $H_0$ is symmetric. For any integer $i$ such that $0\leq i \leq m-5$, and any non-negative integer $k$, such that $k \leq 3$ and $i+k \leq m-5$,
+The coefficient $(i,i+k)$ of matrix $H_0$, with $k\in\{0,1,2,3\}$ is equal to
+\begin{eqnarray*}
+H_{0\ i,i+k} &=& \int_{\tau_0}^{\tau_{2p-1}} \z_{i,3} \z_{i+k,3}(t)dt\\
+%% &=& \int_{\tau_0}^{\tau_{2p-1}} (Z_{i, i} \mathbb{I}_{[t_i, t_{i+1}]} + Z_{i,i+1} \mathbb{I}_{[t_{i+1}, t_{i+2}]} +Z_{i,i+2} \mathbb{I}_{[t_{i+2}, t_{i+3}]}+Z_{i,i+3} \mathbb{I}_{[t_{i+3}, t_{i+4}]})\\
+%% && \hspace*{1cm}(Z_{i+k, i+k} \mathbb{I}_{[t_i+k, t_{i+k+1}]} + Z_{i+k,i+k+1} \mathbb{I}_{[t_{i+k+1}, t_{i+k+2}]} +\\
+%% && \hspace*{1cm}Z_{i+k,i+k+2} \mathbb{I}_{[t_{i+k+2}, t_{i+k+3}]}+Z_{i+k,i+k+3} \mathbb{I}_{[t_{i+k+3}, t_{i+k+4}]}) dt\\
+&=& \sum_{j=0}^{3-k} \int_{t_{i+k+j}}^{t_{i+k+j+1}}Z_{i,i+k+j} Z_{i+k,i+k+j} (t) dt
+\end{eqnarray*}
+The coefficients of vector $b_0$ are equal to:
+\begin{eqnarray*}
+  b_{0\,i} &=& \int_{\tau_0}^{\tau_{2p-1}}(Z_{i, i} \mathbb{I}_{[t_i, t_{i+1}]} + Z_{i,i+1} \mathbb{I}_{[t_{i+1}, t_{i+2}]} +Z_{i,i+2} \mathbb{I}_{[t_{i+2}, t_{i+3}]}+Z_{i,i+3} \mathbb{I}_{[t_{i+3}, t_{i+4}]})\ \zmprefx(t)dt \\
+  %% b_{0\,0} &=& \int_{\tau_0}^{\tau_{1}} Z_{0,0+3}\ \zmprefx(t)dt \\
+  %% b_{0\,1} &=& \int_{\tau_0}^{\tau_{1}} Z_{1,1+2}\ \zmprefx(t)dt + \int_{\tau_1}^{\tau_{2}} Z_{1,1+3}\ \zmprefx(t)dt \\
+  %% b_{0\,2} &=& \int_{\tau_0}^{\tau_{1}} Z_{2,2+1}\ \zmprefx(t)dt + \int_{\tau_1}^{\tau_{2}} Z_{2,2+2}\ \zmprefx(t)dt + \int_{\tau_2}^{\tau_{3}} Z_{2,2+3}\ \zmprefx(t)dt \\
+  %% b_{0\,i} &=& \int_{\tau_{i-3}}^{\tau_{i-2}} Z_{i,i+0} \zmprefx(t)dt + \int_{\tau_{i-2}}^{\tau_{i-1}} Z_{i,i+1} \zmprefx(t)dt\\
+  %% && + \int_{\tau_{i-1}}^{\tau_{i}} Z_{i,i+2} \zmprefx(t)dt + \int_{\tau_{i}}^{\tau_{i+1}} Z_{i,i+3} \zmprefx(t)dt\\
+  %% &=& \sum_{j=0}^{3} \int_{\tau_{i-3+j}}^{\tau_{i-2+j}} Z_{i,i+j} \zmprefx(t)\,dt\\
+  &=& \sum_{j=\max(0,3-i)}^{\min(3,2p+1-i)} \int_{t_{i+j}}^{t_{i+j+1}} Z_{i,i+j} \zmprefx(t)\,dt
+\end{eqnarray*}
+
+\end{document}
+j <= 2p+1-i
