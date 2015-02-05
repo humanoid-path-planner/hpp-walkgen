@@ -60,14 +60,14 @@ and for any interval $I$ of $\real$, $\mathbb{I}_{I}$ is the function equal to
 The input of the walk generator is a sequence of time-stamped steps defined
 as follows:
 \begin{enumerate}
-\item $p$ is a positive integer not smaller than 2,
-\item $\tau_0, \tau_1, \cdots, \tau_{2p-1}$ is an increasing sequence of real values,
+\item $p$ is a positive integer not smaller than 3,
+\item $\tau_0, \tau_1, \cdots, \tau_{2p-3}$ is an increasing sequence of real values,
 \item $\step_0, \step_1, \cdots, \step_{p-1}$ is a sequence of $p$ elements of
   $\real^2$ representing the successive positions of the foot centers.
 \item $\com_{init}\in\real^2$ is the initial position of the center of mass at
   time $\tau_0$,
 \item $\com_{final}\in\real^2$ is the final position of the center of mass at time
-  $\tau_p$.
+  $\tau_{2p-3}$.
 \end{enumerate}
 
 \subsection {Reference trajectory of the center of pressure}
@@ -80,21 +80,21 @@ $\zmpref$ as a continuous piecewise affine curve as follows:
 \zmpref (\tau_2) &=& \step_1 \\
 \zmpref (\tau_3) &=& \step_2 \\
 \vdots & \vdots & \vdots \\
-\zmpref (\tau_{2p-3}) &=& \step_{p-1} \\
-\zmpref (\tau_{2p-2}) &=& \step_{p-1} \\
-\zmpref (\tau_{2p-1}) &=& \com_{final}
+\zmpref (\tau_{2p-5}) &=& \step_{p-2} \\
+\zmpref (\tau_{2p-4}) &=& \step_{p-2} \\
+\zmpref (\tau_{2p-3}) &=& \com_{final}
 \end{eqnarray*}
 such that $\zmpref$ restricted to each interval $[\tau_i,\tau_{i+1}]$ with
-$i\in\{0,1,\cdots,2p-2\}$ is affine.
+$i\in\{0,1,\cdots,2p-4\}$ is affine.
 
 \subsection {Trajectory of the center of mass}
 
 We restrict the trajectory of the center of mass to be a cubic-spline defined by
 Equation~(\ref{eq:b-spline}). As we want the whole center of mass trajectory to
-be defined on interval $[\tau_0, \tau_{2p-1}]$, we get the following relations
+be defined on interval $[\tau_0, \tau_{2p-3}]$, we get the following relations
 between the various parameters:
 \begin {eqnarray*}
-m &=& 2p+6 \\
+m &=& 2p+4 \\
 t_3 &=& \tau_0 \\
 t_{m-4} &=& \tau_{2p-1} \\
 \end {eqnarray*}

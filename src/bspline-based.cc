@@ -52,10 +52,10 @@ namespace hpp {
       steps_ = steps;
       boundaryConditions_.clear ();
       std::size_t p = steps.size ();
-      m_ = 2*p + 6;
-      if (p < 2) {
+      m_ = 2*p + 4;
+      if (p < 3) {
 	throw std::runtime_error
-	  ("Step sequence should contain at least 2 steps");
+	  ("Step sequence should contain at least 3 steps");
       }
       zmpRefInit_ = .5 * (steps [0].position + steps [1].position);
       zmpRefEnd_ = .5 * (steps [p-2].position + steps [p-1].position);
@@ -110,12 +110,12 @@ namespace hpp {
     void SplineBased::defineProblem () const
     {
       std::size_t p = steps_.size ();
-      if (p < 2) {
+      if (p < 3) {
 	std::ostringstream oss;
-	oss << "size of step vector (" << p << ") should be at least 2.";
+	oss << "size of step vector (" << p << ") should be at least 3.";
 	throw std::runtime_error (oss.str ());
       }
-      if (tau_.size () != 2*p) {
+      if (tau_.size () != 2*p-2) {
 	std::ostringstream oss;
 	oss << "size of time vector (" << tau_.size ()
 	    << ") does not fit " << "size of step vector (" << steps_.size ()
@@ -129,8 +129,8 @@ namespace hpp {
       for (std::size_t i=3; (size_type)i < m_-3; ++i) {
 	knots [i] = tau_ [i-3];
       }
-      knots [m_-3] = tau_ [2*p-1] + 1; knots [m_-2] = tau_ [2*p-1] + 2;
-      knots [m_-1] = tau_ [2*p-1] + 3;
+      knots [m_-3] = tau_ [2*p-3] + 1; knots [m_-2] = tau_ [2*p-3] + 2;
+      knots [m_-1] = tau_ [2*p-3] + 3;
       // create spline
       vector_t parameters (2*(m_-4));
       comTrajectory_ = CubicBSplinePtr_t (new CubicBSpline
@@ -164,7 +164,7 @@ namespace hpp {
 					  steps_ [1][0]));
       zmpRef1_.push_back (PiecewisePoly3 (tau_ [1], tau_ [2], steps_ [1][1],
 					  steps_ [1][1]));
-      for (size_type i=1; i < (size_type)p-1; ++i) {
+      for (size_type i=1; i < (size_type)p-2; ++i) {
 	zmpRef0_.push_back (PiecewisePoly3 (tau_ [2*i], tau_ [2*i+1],
 					    steps_ [i][0], steps_ [i+1][0]));
 	zmpRef1_.push_back (PiecewisePoly3 (tau_ [2*i], tau_ [2*i+1],
@@ -174,14 +174,14 @@ namespace hpp {
 	zmpRef1_.push_back (PiecewisePoly3 (tau_ [2*i+1], tau_ [2*i+2],
 					    steps_ [i+1][1], steps_ [i+1][1]));
       }
-      zmpRef0_.push_back (PiecewisePoly3 (tau_ [2*p-2], tau_ [2*p-1],
-					  steps_ [p-1][0], zmpRefEnd_ [0]));
-      zmpRef1_.push_back (PiecewisePoly3 (tau_ [2*p-2], tau_ [2*p-1],
-					  steps_ [p-1][1], zmpRefEnd_ [1]));
+      zmpRef0_.push_back (PiecewisePoly3 (tau_ [2*p-4], tau_ [2*p-3],
+					  steps_ [p-2][0], zmpRefEnd_ [0]));
+      zmpRef1_.push_back (PiecewisePoly3 (tau_ [2*p-4], tau_ [2*p-3],
+					  steps_ [p-2][1], zmpRefEnd_ [1]));
       // Fill b0_ and b1_
       b0_.setZero (); b1_.setZero ();
       for (size_type i = 0; i < m_ - 4; ++i) {
-	for (std::size_t j = std::max (0, 3-i); j < 4 && j < 2*p+2-i; ++j) {
+	for (std::size_t j = std::max (0, 3-i); j < 4 && j < 2*p-i; ++j) {
 	  b0_ [i]  += integral (knots [i+j], knots [i+j+1],
 				Z_ [i][j], zmpRef0_ [i+j-3]);
 	  b1_ [i]  += integral (knots [i+j], knots [i+j+1],
