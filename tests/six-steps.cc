@@ -62,6 +62,13 @@ BOOST_AUTO_TEST_CASE (six_steps)
   SplineBasedPtr_t pg (SplineBased::create (height));
   pg->timeSequence (times);
   pg->stepSequence (steps);
+  
+  // define boundary conditions
+  vector2_t position; position.setZero ();
+  vector2_t velocity; velocity.setZero ();
+  pg->setInitialComState (position, velocity);
+  position [0] = .6;
+  pg->setEndComState (position, velocity);
 
   CubicBSplinePtr_t comTrajectory = pg->solve ();
 

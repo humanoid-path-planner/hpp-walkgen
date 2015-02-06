@@ -45,6 +45,7 @@ namespace hpp {
     {
       tau_ = times;
       boundaryConditions_.clear ();
+      
     }
 
     void SplineBased::stepSequence (const Steps_t& steps)
@@ -57,13 +58,77 @@ namespace hpp {
 	throw std::runtime_error
 	  ("Step sequence should contain at least 3 steps");
       }
+      // build knot vector
+      std::vector <value_type> knots (m_);
+      double tau0 = tau_ [0];
+      knots [0] = tau0 - 3; knots [1] = tau0 - 2;  knots [2] = tau0 - 2;
+      for (std::size_t i=3; (size_type)i < m_-3; ++i) {
+	knots [i] = tau_ [i-3];
+      }
+      knots [m_-3] = tau_ [m_ - 7] + 1; knots [m_-2] = tau_ [m_ - 7] + 2;
+      knots [m_-1] = tau_ [m_ - 7] + 3;
+      // create spline
+      vector_t parameters (2*(m_-4));
+      comTrajectory_ = CubicBSplinePtr_t (new CubicBSpline
+					  (2, knots, parameters));
+      // Resize quadratic program
+      H0_.resize (m_-4, m_-4);
+      b0_.resize (m_-4);
+      b1_.resize (m_-4);
+      A0_.resize (0, m_-4);
+      c0_.resize (0);
+      c1_.resize (0);
       zmpRefInit_ = .5 * (steps [0].position + steps [1].position);
       zmpRefEnd_ = .5 * (steps [p-2].position + steps [p-1].position);
     }
 
     void SplineBased::add (const BoundaryCondition& boundaryCondition)
     {
+      throw std::runtime_error ("Not implemented yet");
       boundaryConditions_.push_back (boundaryCondition);
+    }
+
+    void SplineBased::setInitialComState (const vector2_t& position,
+					  const vector2_t& velocity)
+    {
+      // Fill right hand side of constraint
+      c0_.conservativeResize (c0_.rows () + 2);
+      c1_.conservativeResize (c1_.rows () + 2);
+      c0_.bottomRows <2> () [0] = position [0];
+      c0_.bottomRows <2> () [1] = velocity [0];
+      c1_.bottomRows <2> () [0] = position [1];
+      c1_.bottomRows <2> () [1] = velocity [1];
+      // Fill matrix of constraint
+      value_type t3 = tau_ [0];
+      A0_.conservativeResize (A0_.rows () + 2, m_-4);
+      A0_.bottomRows <2> ().setZero ();
+      const polynomials3vectors_t& bases = comTrajectory_->basisPolynomials ();
+      for (size_type j=0; j < 4; ++j) {
+	A0_.bottomRows <2> () (0, j) = bases [j][3-j] (t3);
+	A0_.bottomRows <2> () (1, j) = bases [j][3-j].derivative (t3, 1);
+      }
+    }
+
+    void SplineBased::setEndComState (const vector2_t& position,
+				      const vector2_t& velocity)
+    {
+      // Fill right hand side of constraint
+      c0_.conservativeResize (c0_.rows () + 2);
+      c1_.conservativeResize (c1_.rows () + 2);
+      c0_.bottomRows <2> () [0] = position [0];
+      c0_.bottomRows <2> () [1] = velocity [0];
+      c1_.bottomRows <2> () [0] = position [1];
+      c1_.bottomRows <2> () [1] = velocity [1];
+      // Fill matrix of constraint
+      value_type tm_4 = tau_ [tau_.size () - 1];
+      A0_.conservativeResize (A0_.rows () + 2, m_-4);
+      A0_.bottomRows <2> ().setZero ();
+      const polynomials3vectors_t& bases = comTrajectory_->basisPolynomials ();
+      for (size_type j=0; j < 3; ++j) {
+	A0_.bottomRightCorner (2, 3) (0, j) = bases [m_-7+j][3-j] (tm_4);
+	A0_.bottomRightCorner (2, 3) (1, j) =
+	  bases [m_-7+j][3-j].derivative (tm_4, 1);
+      }
     }
 
     void SplineBased::buildPolynomialVector () const
@@ -122,24 +187,7 @@ namespace hpp {
 	    << ").";
 	throw std::runtime_error (oss.str ());
       }
-      // build knot vector
-      std::vector <value_type> knots (m_);
-      double tau0 = tau_ [0];
-      knots [0] = tau0 - 3; knots [1] = tau0 - 2;  knots [2] = tau0 - 2;
-      for (std::size_t i=3; (size_type)i < m_-3; ++i) {
-	knots [i] = tau_ [i-3];
-      }
-      knots [m_-3] = tau_ [2*p-3] + 1; knots [m_-2] = tau_ [2*p-3] + 2;
-      knots [m_-1] = tau_ [2*p-3] + 3;
-      // create spline
-      vector_t parameters (2*(m_-4));
-      comTrajectory_ = CubicBSplinePtr_t (new CubicBSpline
-					  (2, knots, parameters));
-      // Resize quadratic program
-      H0_.resize (m_-4, m_-4);
-      b0_.resize (m_-4);
-      b1_.resize (m_-4);
-
+      const std::vector< value_type >& knots = comTrajectory_->knotVector ();
       // Fill H0_
       buildPolynomialVector ();
       H0_.setZero ();
@@ -192,12 +240,24 @@ namespace hpp {
     CubicBSplinePtr_t SplineBased::solve () const
     {
       defineProblem ();
-      vector_t param0 = H0_.colPivHouseholderQr ().solve (b0_);
-      vector_t param1 = H0_.colPivHouseholderQr ().solve (b1_);
+      Eigen::JacobiSVD <matrix_t> svd (A0_, Eigen::ComputeThinU |
+				       Eigen::ComputeFullV);
+      vector_t X_00 = svd.solve (c0_);
+      vector_t X_10 = svd.solve (c1_);
+      const matrix_t& V = svd.matrixV ();
+      size_type rank = svd.rank ();
+      matrix_t V0THi = V.rightCols (m_-4-rank).transpose ()*H0_;
+      Eigen::LLT <matrix_t> llt (V0THi*V.rightCols (m_-4-rank));
+      vector_t rhs0 = V.rightCols (m_-4-rank).transpose ()*b0_ - V0THi*X_00;
+      vector_t rhs1 = V.rightCols (m_-4-rank).transpose ()*b1_ - V0THi*X_10;
+      vector_t u0 = llt.solve (rhs0);
+      vector_t u1 = llt.solve (rhs1);
+      vector_t X0 = X_00 + V.rightCols (m_-4-rank) * u0;
+      vector_t X1 = X_10 + V.rightCols (m_-4-rank) * u1;
       vector_t parameters (2*(m_-4));
       for (size_type i=0; i < m_-4; ++i) {
-	parameters [2*i] = param0 [i];
-	parameters [2*i+1] = param1 [i];
+	parameters [2*i] = X0 [i];
+	parameters [2*i+1] = X1 [i];
       }
       comTrajectory_->setParameters (parameters);
       return comTrajectory_;

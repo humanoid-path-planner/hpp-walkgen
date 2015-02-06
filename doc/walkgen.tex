@@ -7,7 +7,10 @@
 
 \newcommand\real{\mathbb{R}}
 \newcommand\x{\mathbf{x}}
+\newcommand\dx{\mathbf{\dot{x}}}
 \newcommand\ddx{\mathbf{\ddot{x}}}
+\newcommand\y{\mathbf{y}}
+\newcommand\dy{\dot{\mathbf{y}}}
 \newcommand\step{\mathbf{s}}
 \newcommand\com{\mathbf{c}}
 \newcommand\z{z}
@@ -38,7 +41,7 @@ We define the curve $\x$ from interval $[t_3, t_{m-4}]$ in $\real^2$ as
 \end{equation}\label{eq:b-spline}
 where $b_{i,3}$ are the basis function of cubic B splines:
 \begin{eqnarray*}
-b_{i,3} &=& (B_{i, i} \mathbb{I}_{[t_i, t_{i+1}]} + B_{i,i+1} \mathbb{I}_{[t_{i+1}, t_{i+2}]} +B_{i,i+2} \mathbb{I}_{[t_{i+2}, t_{i+3}]}+B_{i,i+3} \mathbb{I}_{[t_{i+3}, t_{i+4}]})\\
+b_{i,3} &=& (B_{i, i} \mathbb{I}_{[t_i, t_{i+1})} + B_{i,i+1} \mathbb{I}_{[t_{i+1}, t_{i+2})} +B_{i,i+2} \mathbb{I}_{[t_{i+2}, t_{i+3})}+B_{i,i+3} \mathbb{I}_{[t_{i+3}, t_{i+4})})\\
 &&i=0,\ldots, m-5
 \end{eqnarray*}
 with
@@ -96,7 +99,7 @@ between the various parameters:
 \begin {eqnarray*}
 m &=& 2p+4 \\
 t_3 &=& \tau_0 \\
-t_{m-4} &=& \tau_{2p-1} \\
+t_{m-4} &=& \tau_{2p-3} \\
 \end {eqnarray*}
 We need to fix the undefined knots. We arbitrarily set
 
@@ -110,9 +113,9 @@ We need to fix the undefined knots. We arbitrarily set
   }
   \parbox {.49\linewidth} {
     \begin {eqnarray*}
-      t_{m-3} &=& \tau_{2p-1} + 1 \\
-      t_{m-2} &=& \tau_{2p-1} + 2 \\
-      t_{m-1} &=& \tau_{2p-1} + 3 \\
+      t_{m-3} &=& \tau_{2p-3} + 1 \\
+      t_{m-2} &=& \tau_{2p-3} + 2 \\
+      t_{m-1} &=& \tau_{2p-3} + 3 \\
     \end {eqnarray*}
   }
 }
@@ -132,7 +135,7 @@ $$
 we get an expression of the center of pressure with respect to the control
 points of the cubic B spline:
 \begin{equation}\label{eq:zmp-spline}
-\zmp = \sum_{i=0}^{m-5} \z_{i,3} \x_{i}= \sum_{i=0}^{2p-2} \z_{i,3} \x_{i}
+\zmp = \sum_{i=0}^{m-5} \z_{i,3} \x_{i}= \sum_{i=0}^{2p-1} \z_{i,3} \x_{i}
 \end{equation}
 
 \subsection {Optimal control problem}
@@ -141,13 +144,13 @@ We denote by $X=(\x_0, \cdots, \x_{m-5})$ the vector of control points.
 We wish to find the cubic B spline trajectory that minimizes the
 following cost function:
 \begin{equation}\label{eq:qudratic-cost}
-C(X) \triangleq \frac{1}{2}\int_{\tau_0}^{\tau_{2p-1}} \|\zmp (t) - \zmpref (t)\|^2 dt
+C(X) \triangleq \frac{1}{2}\int_{\tau_0}^{\tau_{2p-3}} \|\zmp (t) - \zmpref (t)\|^2 dt
 \end{equation}
 Let us expand this formula using~(\ref{eq:zmp-spline}):
 \begin{eqnarray*}
-C(X) &=& \frac{1}{2}\int_{\tau_0}^{\tau_{2p-1}} (\sum_{i=0}^{2p-2} \z_{i,3} \x_{i} - \zmpref (t))^T(\sum_{i=0}^{2p-2} \z_{i,3} \x_{i} - \zmpref (t)) dt\\
-&=& \frac{1}{2}\sum_{i=0}^{m-5}\sum_{j=0}^{m-5}\int_{\tau_0}^{\tau_{2p-1}} \z_{i,3} \z_{j,3} (t) dt\  \x_i^T\x_j - \sum_{i=0}^{m-5}\int_{\tau_0}^{\tau_{2p-1}}\z_{i,3}\zmpref^T(t)dt\ \x_i\\
-&&+ \int_{\tau_0}^{\tau_{2p-1}} \zmpref^T\zmpref (t)dt
+C(X) &=& \frac{1}{2}\int_{\tau_0}^{\tau_{2p-3}} (\sum_{i=0}^{2p-4} \z_{i,3} \x_{i} - \zmpref (t))^T(\sum_{i=0}^{2p-4} \z_{i,3} \x_{i} - \zmpref (t)) dt\\
+&=& \frac{1}{2}\sum_{i=0}^{m-5}\sum_{j=0}^{m-5}\int_{\tau_0}^{\tau_{2p-3}} \z_{i,3} \z_{j,3} (t) dt\  \x_i^T\x_j - \sum_{i=0}^{m-5}\int_{\tau_0}^{\tau_{2p-3}}\z_{i,3}\zmpref^T(t)dt\ \x_i\\
+&&+ \int_{\tau_0}^{\tau_{2p-3}} \zmpref^T\zmpref (t)dt
 \end{eqnarray*}
 The cost function can be rewritten as
 \begin{eqnarray*}
@@ -156,19 +159,19 @@ C(X) &=& \frac{1}{2}X^THX - b^T X + C_0
 with
 \begin{eqnarray*}
 H &=& \left(\begin{array}{c}
-\int_{\tau_0}^{\tau_{2p-1}} \z_{i,3} \z_{j,3}(t)dt\ I_2 \end{array}\right)_{i,j=0,\cdots,m-5} \\
-b &=& \left(\begin{array}{c}\int_{\tau_0}^{\tau_{2p-1}}\z_{i,3}\zmpref(t)dt\end{array}\right)_{i=0,\cdots,m-5}\\
-C_0 &=&\int_{\tau_0}^{\tau_{2p-1}} \zmpref^T\zmpref (t)dt
+\int_{\tau_0}^{\tau_{2p-3}} \z_{i,3} \z_{j,3}(t)dt\ I_2 \end{array}\right)_{i,j=0,\cdots,m-5} \\
+b &=& \left(\begin{array}{c}\int_{\tau_0}^{\tau_{2p-3}}\z_{i,3}\zmpref(t)dt\end{array}\right)_{i=0,\cdots,m-5}\\
+C_0 &=&\int_{\tau_0}^{\tau_{2p-3}} \zmpref^T\zmpref (t)dt
 \end{eqnarray*}
 $C(X)$ is the sum of two terms that respectively depend on the $x$ and $y$
 coordinates of the control points. Let us denote $\x_{i,0}$, $\x_{i,1}$ the abscissa and the ordinate of $\x_i$, $\zmprefx$, $\zmprefy$ the abscissa and ordinate of $\zmpref$, and let us define
 \begin{eqnarray*}
   X_0 &=& (\x_{0,0},\cdots,\x_{m-5,0}) \\
   X_1 &=& (\x_{0,1},\cdots,\x_{m-5,1}) \\
-  b_0 &=& \left(\begin{array}{c}\int_{\tau_0}^{\tau_{2p-1}}\z_{i,3}\ \zmprefx(t)dt\end{array}\right)_{i=0,\cdots,m-5}\\
-  b_1 &=& \left(\begin{array}{c}\int_{\tau_0}^{\tau_{2p-1}}\z_{i,3}\ \zmprefy(t)dt\end{array}\right)_{i=0,\cdots,m-5}\\
+  b_0 &=& \left(\begin{array}{c}\int_{\tau_0}^{\tau_{2p-3}}\z_{i,3}\ \zmprefx(t)dt\end{array}\right)_{i=0,\cdots,m-5}\\
+  b_1 &=& \left(\begin{array}{c}\int_{\tau_0}^{\tau_{2p-3}}\z_{i,3}\ \zmprefy(t)dt\end{array}\right)_{i=0,\cdots,m-5}\\
   H_0 = H_1 &=& \left(\begin{array}{c}
-    \int_{\tau_0}^{\tau_{2p-1}} \z_{i,3} \z_{j,3}(t)dt \end{array}\right)_{i,j=0,\cdots,m-5} \\
+    \int_{\tau_0}^{\tau_{2p-3}} \z_{i,3} \z_{j,3}(t)dt \end{array}\right)_{i,j=0,\cdots,m-5} \\
 \end{eqnarray*}
 Then,
 \begin{eqnarray*}
@@ -176,10 +179,61 @@ C(X) &=& \frac{1}{2}X_0^TH_0X_0 - b_0^T X_0 + \frac{1}{2}X_1^TH_1X_1 - b_1^T X_1
 \end{eqnarray*}
 The problem can therefore be decomposed into two decoupled sub-problems, one in $X_0$ and the other one in $X_1$.
 
+\subsubsection {Linear constraints}
+
+Boundary conditions can be added as a constraint on the value of the
+trajectory of the center of mass and its derivative at a given
+parameter -- usually at the beginning or at the end of the definition
+interval. Each of these constraints is defined by a tuple
+$(t,\y,\dy)\in[\tau_0,\tau_{2p-3}]\times\real^2\times\real^2$ and is
+  linear in the vector of control points.
+\begin{eqnarray}\label{eq:constraint}
+\sum_{i=0}^{m-5}b_{i,3}(t)\,\x_i &=&\y \\
+\sum_{i=0}^{m-5}\dot{b}_{i,3}(t)\,\x_i &=& \dy
+\end{eqnarray}
+These constraints can be translated to each sub-problem as follows:
+\begin{eqnarray*}
+  A_0\,X_0 &=& c_0 \\
+  A_1\,X_1 &=& c_1 \\
+\end{eqnarray*}
+with
+\begin{eqnarray*}
+  A_0 = A_1 &\triangleq& \left(\begin{array}{cccc}b_{0,3}(t)&b_{1,3}(t)&\cdots&b_{m-5,3}(t)\\
+    \dot{b}_{0,3}(t)&\dot{b}_{1,3}(t)&\cdots&\dot{b}_{m-5,3}(t)\end{array}\right) \\
+  c_0 &=& \left(\begin{array}{c}\y_0\\\dy_0\end{array}\right) \\
+  c_1 &=& \left(\begin{array}{c}\y_1\\\dy_1\end{array}\right) \\
+\end{eqnarray*}
+
+\subsubsection {Resolution of the quadratic program}
+
+The constrained problem can be expressed as follows for $i\in{0,1}$:
+$$
+\min_{X_i} \frac{1}{2}X_i^TH_iX_i - b_i^TX_i \ \ \mbox{such that}\ \ A_i\,X=c_i
+$$
+using the singular value decomposition of $A_i$
+$$
+A_i = \left(\begin{array}{cc}U_1 & U_0\end{array}\right) \Sigma
+\left(\begin{array}{cc}V_1 & V_0\end{array}\right)^T
+$$
+we get a parameterization of the affine sub-space defined by the constraint:
+$$
+X_i = X_{i\,0} + V_0\mathbf{u}\ \ \ \mathbf{u}\in\real^{m-4-rank(A_i)}
+$$
+where $X_{i\,0}=A_i^{+}c_i$.
+Solving the constrained QP consists in finding $\mathbf{u}$ that minimizes
+\begin{eqnarray*}
+&&\frac{1}{2}( X_{i\,0} + V_0\mathbf{u})^TH_i( X_{i\,0} + V_0\mathbf{u}) - b_i^T( X_{i\,0} + V_0\mathbf{u})\\
+&=& \frac{1}{2}\mathbf{u}^TV_0^TH_iV_0\mathbf{u} + X_{i\,0}^T H_i V_0\mathbf{u} - b_i^TV_0\mathbf{u} + Cste \\
+&=& \frac{1}{2}\mathbf{u}^TV_0^TH_iV_0\mathbf{u} + (V_0^T H_i X_{i\,0}  - V_0^Tb_i)^T\mathbf{u} + Cste \\
+\end{eqnarray*}
+The value of $\mathbf{u}$ that minimizes the above expression is given by
+$$
+\mathbf{u_i}^{*} = (V_0^TH_iV_0)^{-1}(V_0^Tb_i  - V_0^T H_i X_{i\,0})
+$$
 \subsection {Computation of the coefficients}
 
 \begin{eqnarray*}
-z_{i,3} &=& (Z_{i, i} \mathbb{I}_{[t_i, t_{i+1}]} + Z_{i,i+1} \mathbb{I}_{[t_{i+1}, t_{i+2}]} +Z_{i,i+2} \mathbb{I}_{[t_{i+2}, t_{i+3}]}+Z_{i,i+3} \mathbb{I}_{[t_{i+3}, t_{i+4}]})\\
+z_{i,3} &=& (Z_{i, i} \mathbb{I}_{[t_i, t_{i+1})} + Z_{i,i+1} \mathbb{I}_{[t_{i+1}, t_{i+2})} +Z_{i,i+2} \mathbb{I}_{[t_{i+2}, t_{i+3})}+Z_{i,i+3} \mathbb{I}_{[t_{i+3}, t_{i+4})})\\
 &&i=0,\ldots, m-5
 \end{eqnarray*}
 with
@@ -192,23 +246,33 @@ Z_{i,i+3} (t) &=& B_{i,i+3} - \frac{1}{\omega^2} \ddot{B}_{i,i+3} \\
 Matrix $H_0$ is symmetric. For any integer $i$ such that $0\leq i \leq m-5$, and any non-negative integer $k$, such that $k \leq 3$ and $i+k \leq m-5$,
 The coefficient $(i,i+k)$ of matrix $H_0$, with $k\in\{0,1,2,3\}$ is equal to
 \begin{eqnarray*}
-H_{0\ i,i+k} &=& \int_{\tau_0}^{\tau_{2p-1}} \z_{i,3} \z_{i+k,3}(t)dt\\
-%% &=& \int_{\tau_0}^{\tau_{2p-1}} (Z_{i, i} \mathbb{I}_{[t_i, t_{i+1}]} + Z_{i,i+1} \mathbb{I}_{[t_{i+1}, t_{i+2}]} +Z_{i,i+2} \mathbb{I}_{[t_{i+2}, t_{i+3}]}+Z_{i,i+3} \mathbb{I}_{[t_{i+3}, t_{i+4}]})\\
-%% && \hspace*{1cm}(Z_{i+k, i+k} \mathbb{I}_{[t_i+k, t_{i+k+1}]} + Z_{i+k,i+k+1} \mathbb{I}_{[t_{i+k+1}, t_{i+k+2}]} +\\
-%% && \hspace*{1cm}Z_{i+k,i+k+2} \mathbb{I}_{[t_{i+k+2}, t_{i+k+3}]}+Z_{i+k,i+k+3} \mathbb{I}_{[t_{i+k+3}, t_{i+k+4}]}) dt\\
+H_{0\ i,i+k} &=& \int_{\tau_0}^{\tau_{2p-3}} \z_{i,3} \z_{i+k,3}(t)dt\\
+%% &=& \int_{\tau_0}^{\tau_{2p-3}} (Z_{i, i} \mathbb{I}_{[t_i, t_{i+1})} + Z_{i,i+1} \mathbb{I}_{[t_{i+1}, t_{i+2})} +Z_{i,i+2} \mathbb{I}_{[t_{i+2}, t_{i+3})}+Z_{i,i+3} \mathbb{I}_{[t_{i+3}, t_{i+4})})\\
+%% && \hspace*{1cm}(Z_{i+k, i+k} \mathbb{I}_{[t_i+k, t_{i+k+1})} + Z_{i+k,i+k+1} \mathbb{I}_{[t_{i+k+1}, t_{i+k+2})} +\\
+%% && \hspace*{1cm}Z_{i+k,i+k+2} \mathbb{I}_{[t_{i+k+2}, t_{i+k+3})}+Z_{i+k,i+k+3} \mathbb{I}_{[t_{i+k+3}, t_{i+k+4})}) dt\\
 &=& \sum_{j=0}^{3-k} \int_{t_{i+k+j}}^{t_{i+k+j+1}}Z_{i,i+k+j} Z_{i+k,i+k+j} (t) dt
 \end{eqnarray*}
 The coefficients of vector $b_0$ are equal to:
 \begin{eqnarray*}
-  b_{0\,i} &=& \int_{\tau_0}^{\tau_{2p-1}}(Z_{i, i} \mathbb{I}_{[t_i, t_{i+1}]} + Z_{i,i+1} \mathbb{I}_{[t_{i+1}, t_{i+2}]} +Z_{i,i+2} \mathbb{I}_{[t_{i+2}, t_{i+3}]}+Z_{i,i+3} \mathbb{I}_{[t_{i+3}, t_{i+4}]})\ \zmprefx(t)dt \\
+  b_{0\,i} &=& \int_{\tau_0}^{\tau_{2p-3}}(Z_{i, i} \mathbb{I}_{[t_i, t_{i+1})} + Z_{i,i+1} \mathbb{I}_{[t_{i+1}, t_{i+2})} +Z_{i,i+2} \mathbb{I}_{[t_{i+2}, t_{i+3})}+Z_{i,i+3} \mathbb{I}_{[t_{i+3}, t_{i+4})})\ \zmprefx(t)dt \\
   %% b_{0\,0} &=& \int_{\tau_0}^{\tau_{1}} Z_{0,0+3}\ \zmprefx(t)dt \\
   %% b_{0\,1} &=& \int_{\tau_0}^{\tau_{1}} Z_{1,1+2}\ \zmprefx(t)dt + \int_{\tau_1}^{\tau_{2}} Z_{1,1+3}\ \zmprefx(t)dt \\
   %% b_{0\,2} &=& \int_{\tau_0}^{\tau_{1}} Z_{2,2+1}\ \zmprefx(t)dt + \int_{\tau_1}^{\tau_{2}} Z_{2,2+2}\ \zmprefx(t)dt + \int_{\tau_2}^{\tau_{3}} Z_{2,2+3}\ \zmprefx(t)dt \\
   %% b_{0\,i} &=& \int_{\tau_{i-3}}^{\tau_{i-2}} Z_{i,i+0} \zmprefx(t)dt + \int_{\tau_{i-2}}^{\tau_{i-1}} Z_{i,i+1} \zmprefx(t)dt\\
   %% && + \int_{\tau_{i-1}}^{\tau_{i}} Z_{i,i+2} \zmprefx(t)dt + \int_{\tau_{i}}^{\tau_{i+1}} Z_{i,i+3} \zmprefx(t)dt\\
   %% &=& \sum_{j=0}^{3} \int_{\tau_{i-3+j}}^{\tau_{i-2+j}} Z_{i,i+j} \zmprefx(t)\,dt\\
-  &=& \sum_{j=\max(0,3-i)}^{\min(3,2p+1-i)} \int_{t_{i+j}}^{t_{i+j+1}} Z_{i,i+j} \zmprefx(t)\,dt
+  &=& \sum_{j=\max(0,3-i)}^{\min(3,2p-1-i)} \int_{t_{i+j}}^{t_{i+j+1}} Z_{i,i+j} \zmprefx(t)\,dt
 \end{eqnarray*}
 
+\subsubsection* {Special cases for boundary conditions}
+If $t = \tau_0 = t_3$,
+\begin{eqnarray*}
+  A_0 = A_1 &=& \left(\begin{array}{cccccc}B_{0,0+3}(t_3)&B_{1,1+2}(t_3)&B_{2,2+1}(t_3)&0&\cdots&0\\
+    \dot{B}_{0,0+3}(t_3)&\dot{B}_{1,1+2}(t_3)&\dot{B}_{2,2+1}(t_3)&0&\cdots&0\end{array}\right) \\
+\end{eqnarray*}
+If $t = \tau_{2p-3} = t_{m-4}$
+\begin{eqnarray*}
+  A_0 = A_1 &=& \left(\begin{array}{cccccc}0&\cdots&0&B_{m-7,m-4}(t_{m-4})&B_{m-6,m-4}(t_{m-4})&B_{m-5,m-4}(t_{m-4})\\
+    0&\cdots&0&\dot{B}_{m-7,m-4}(t_{m-4})&\dot{B}_{m-6,m-4}(t_{m-4})&\dot{B}_{m-5,m-4}(t_{m-4})\\\end{array}\right) \\
+\end{eqnarray*}
 \end{document}
-j <= 2p+1-i

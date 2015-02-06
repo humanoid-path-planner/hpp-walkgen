@@ -192,6 +192,20 @@ namespace hpp {
       /// \param position required position of the center of mass.
       /// \note setting time or step sequence discards boundary conditions.
       void add (const BoundaryCondition& boundaryCondition);
+
+      /// Set initial position and velocity of center of mass
+      /// \param position position of the center of mass at start \f$t=\tau_0\f$
+      /// \param velocity velocity of the center of mass at start \f$t=\tau_0\f$
+      void setInitialComState (const vector2_t& position,
+			       const vector2_t& velocity);
+      /// Set final position and velocity of center of mass
+      /// \param position position of the center of mass at end
+      ///        \f$t=\tau_{2p-3}\f$
+      /// \param velocity velocity of the center of mass at start
+      ///        \f$t=\tau_{2p-3}\f$
+      void setEndComState (const vector2_t& position,
+			   const vector2_t& velocity);
+      
       /// Solve quadratic program and return resulting cubic B spline
       ///
       CubicBSplinePtr_t solve () const;
@@ -227,6 +241,8 @@ namespace hpp {
       mutable CubicBSplinePtr_t comTrajectory_;
       mutable matrix_t H0_;
       mutable vector_t b0_, b1_;
+      mutable matrix_t A0_;
+      mutable vector_t c0_, c1_;
       mutable std::vector < std::vector <PiecewisePoly3> > Z_;
       mutable std::vector <PiecewisePoly3> zmpRef0_;
       mutable std::vector <PiecewisePoly3> zmpRef1_;
