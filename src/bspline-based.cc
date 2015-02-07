@@ -58,10 +58,17 @@ namespace hpp {
 	throw std::runtime_error
 	  ("Step sequence should contain at least 3 steps");
       }
+      if (tau_.size () != 2*p-2) {
+	std::ostringstream oss;
+	oss << "size of time vector (" << tau_.size ()
+	    << ") does not fit " << "size of step vector (" << steps_.size ()
+	    << ").";
+	throw std::runtime_error (oss.str ());
+      }
       // build knot vector
       std::vector <value_type> knots (m_);
       double tau0 = tau_ [0];
-      knots [0] = tau0 - 3; knots [1] = tau0 - 2;  knots [2] = tau0 - 2;
+      knots [0] = tau0 - 3; knots [1] = tau0 - 2;  knots [2] = tau0 - 1;
       for (std::size_t i=3; (size_type)i < m_-3; ++i) {
 	knots [i] = tau_ [i-3];
       }
@@ -175,18 +182,6 @@ namespace hpp {
     void SplineBased::defineProblem () const
     {
       std::size_t p = steps_.size ();
-      if (p < 3) {
-	std::ostringstream oss;
-	oss << "size of step vector (" << p << ") should be at least 3.";
-	throw std::runtime_error (oss.str ());
-      }
-      if (tau_.size () != 2*p-2) {
-	std::ostringstream oss;
-	oss << "size of time vector (" << tau_.size ()
-	    << ") does not fit " << "size of step vector (" << steps_.size ()
-	    << ").";
-	throw std::runtime_error (oss.str ());
-      }
       const std::vector< value_type >& knots = comTrajectory_->knotVector ();
       // Fill H0_
       buildPolynomialVector ();

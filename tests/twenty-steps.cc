@@ -44,7 +44,21 @@ BOOST_AUTO_TEST_CASE (six_steps)
   steps.push_back (Step (0.2, -.1));
   steps.push_back (Step (0.4, .1));
   steps.push_back (Step (0.6, -.1));
-  steps.push_back (Step (0.6, .1));
+  steps.push_back (Step (0.8, .1));
+  steps.push_back (Step (0.6, -.1));
+  steps.push_back (Step (0.8, .1));
+  steps.push_back (Step (0.6, -.1));
+  steps.push_back (Step (0.8, .1));
+  steps.push_back (Step (1.0, -.1));
+  steps.push_back (Step (1.2, .1));
+  steps.push_back (Step (1.4, -.1));
+  steps.push_back (Step (1.6, .1));
+  steps.push_back (Step (1.8, -.1));
+  steps.push_back (Step (2.0, .1));
+  steps.push_back (Step (2.2, -.1));
+  steps.push_back (Step (2.4, .1));
+  steps.push_back (Step (2.6, -.1));
+  steps.push_back (Step (2.6, .1));
 
   // Define times
   Times_t times;
@@ -57,7 +71,35 @@ BOOST_AUTO_TEST_CASE (six_steps)
   times.push_back (2.7);
   times.push_back (2.8);
   times.push_back (3.2);
-  times.push_back (3.4);
+  times.push_back (3.3);
+  times.push_back (3.7);
+  times.push_back (3.8);
+  times.push_back (4.2);
+  times.push_back (4.3);
+  times.push_back (4.7);
+  times.push_back (4.8);
+  times.push_back (5.2);
+  times.push_back (5.3);
+  times.push_back (5.7);
+  times.push_back (5.8);
+  times.push_back (6.2);
+  times.push_back (6.3);
+  times.push_back (6.7);
+  times.push_back (6.8);
+  times.push_back (7.2);
+  times.push_back (7.3);
+  times.push_back (7.7);
+  times.push_back (7.8);
+  times.push_back (8.2);
+  times.push_back (8.3);
+  times.push_back (8.7);
+  times.push_back (8.8);
+  times.push_back (9.2);
+  times.push_back (9.3);
+  times.push_back (9.7);
+  times.push_back (9.8);
+  times.push_back (10.2);
+  times.push_back (10.4);
 
   value_type height = .8;
   SplineBasedPtr_t pg (SplineBased::create (height));
@@ -68,7 +110,7 @@ BOOST_AUTO_TEST_CASE (six_steps)
   vector2_t position; position.setZero ();
   vector2_t velocity; velocity.setZero ();
   pg->setInitialComState (position, velocity);
-  position [0] = .6;
+  position [0] = 2.6;
   pg->setEndComState (position, velocity);
 
   CubicBSplinePtr_t comTrajectory = pg->solve ();
