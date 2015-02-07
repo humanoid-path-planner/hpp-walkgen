@@ -240,20 +240,28 @@ namespace hpp {
     CubicBSplinePtr_t SplineBased::solve () const
     {
       defineProblem ();
-      Eigen::JacobiSVD <matrix_t> svd (A0_, Eigen::ComputeThinU |
-				       Eigen::ComputeFullV);
-      vector_t X_00 = svd.solve (c0_);
-      vector_t X_10 = svd.solve (c1_);
-      const matrix_t& V = svd.matrixV ();
-      size_type rank = svd.rank ();
-      matrix_t V0THi = V.rightCols (m_-4-rank).transpose ()*H0_;
-      Eigen::LLT <matrix_t> llt (V0THi*V.rightCols (m_-4-rank));
-      vector_t rhs0 = V.rightCols (m_-4-rank).transpose ()*b0_ - V0THi*X_00;
-      vector_t rhs1 = V.rightCols (m_-4-rank).transpose ()*b1_ - V0THi*X_10;
-      vector_t u0 = llt.solve (rhs0);
-      vector_t u1 = llt.solve (rhs1);
-      vector_t X0 = X_00 + V.rightCols (m_-4-rank) * u0;
-      vector_t X1 = X_10 + V.rightCols (m_-4-rank) * u1;
+      vector_t X0, X1;
+      if (A0_.rows () > 0) {
+	// constraints are defined
+	Eigen::JacobiSVD <matrix_t> svd (A0_, Eigen::ComputeThinU |
+					 Eigen::ComputeFullV);
+	vector_t X_00 = svd.solve (c0_);
+	vector_t X_10 = svd.solve (c1_);
+	const matrix_t& V = svd.matrixV ();
+	size_type rank = svd.rank ();
+	matrix_t V0THi = V.rightCols (m_-4-rank).transpose ()*H0_;
+	Eigen::LLT <matrix_t> llt (V0THi*V.rightCols (m_-4-rank));
+	vector_t rhs0 = V.rightCols (m_-4-rank).transpose ()*b0_ - V0THi*X_00;
+	vector_t rhs1 = V.rightCols (m_-4-rank).transpose ()*b1_ - V0THi*X_10;
+	vector_t u0 = llt.solve (rhs0);
+	vector_t u1 = llt.solve (rhs1);
+	X0 = X_00 + V.rightCols (m_-4-rank) * u0;
+	X1 = X_10 + V.rightCols (m_-4-rank) * u1;
+      } else {
+	Eigen::LLT <matrix_t> llt (H0_);
+	X0 = llt.solve (b0_);
+	X1 = llt.solve (b1_);
+      }
       vector_t parameters (2*(m_-4));
       for (size_type i=0; i < m_-4; ++i) {
 	parameters [2*i] = X0 [i];
