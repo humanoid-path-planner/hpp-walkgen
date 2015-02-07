@@ -31,6 +31,7 @@ using roboptim::trajectory::CubicBSpline;
 using roboptim::trajectory::CubicBSplinePtr_t;
 using hpp::walkgen::value_type;
 using hpp::walkgen::size_type;
+using hpp::walkgen::vector2_t;
 using hpp::walkgen::vector_t;
 
 BOOST_AUTO_TEST_CASE (six_steps)
@@ -75,15 +76,18 @@ BOOST_AUTO_TEST_CASE (six_steps)
   std::cout << "set term wxt persist title 'zmp ref' 0 font ',5'" << std::endl
 	    << "set xlabel 'x'" << std::endl
 	    << "set ylabel 'y'" << std::endl;
-  std::cout << "plot '-' title 'zmp ref' with points\n";
+  std::cout << "plot '-' using 2:3 title 'zmp ref' with points\n";
   const std::vector <PiecewisePoly3>& zmpRefx = pg->zmpRefx ();
   const std::vector <PiecewisePoly3>& zmpRefy = pg->zmpRefy ();
   BOOST_CHECK (zmpRefx.size () == zmpRefy.size ());
   for (std::size_t i=0; i<zmpRefx.size (); ++i) {
     const PiecewisePoly3& px = zmpRefx [i];
     const PiecewisePoly3& py = zmpRefy [i];
+    value_type t = px.lower;
+    value_type delta = (px.upper - px.lower)/6.;
     for (std::size_t j=0; j<7; ++j) {
-      std::cout << px [j] << "\t" << py [j] << std::endl;
+      std::cout << t << "\t" << px [j] << "\t" << py [j] << std::endl;
+      t += delta;
     }
   }
   std::cout << "e" << std::endl;
@@ -91,13 +95,13 @@ BOOST_AUTO_TEST_CASE (six_steps)
 	    << std::endl
 	    << "set xlabel 'x'" << std::endl
 	    << "set ylabel 'y'" << std::endl;
-  std::cout << "plot '-' title 'com' with lines\n";
+  std::cout << "plot '-' using 2:3 title 'com' with lines\n";
   // com
   value_type dt = 0.01;
   for (double t = comTrajectory->timeRange ().first;
        t <= comTrajectory->timeRange ().second; t+=dt) {
     vector_t com = (*comTrajectory) (t);
-    std::cout << com [0] << "\t" << com [1] << std::endl;
+    std::cout << t << "\t" << com [0] << "\t" << com [1] << std::endl;
   }
   std::cout << "e" << std::endl;
   // zmp
@@ -105,13 +109,13 @@ BOOST_AUTO_TEST_CASE (six_steps)
 	    << std::endl
 	    << "set xlabel 'x'" << std::endl
 	    << "set ylabel 'y'" << std::endl;
-  std::cout << "plot '-' title 'zmp' with lines\n";
+  std::cout << "plot '-' using 2:3 title 'zmp' with lines\n";
   value_type un_sur_omega_2 = sqrt (SplineBased::gravity / height);
   for (double t = comTrajectory->timeRange ().first;
        t <= comTrajectory->timeRange ().second; t+=dt) {
     vector_t com = (*comTrajectory) (t);
     vector_t zmp = com - un_sur_omega_2 * comTrajectory->derivative (t, 2);
-    std::cout << zmp [0] << "\t" << zmp [1] << std::endl;
+    std::cout << t << "\t" << zmp [0] << "\t" << zmp [1] << std::endl;
   }
   std::cout << "e" << std::endl;
 }
