@@ -105,7 +105,7 @@ namespace hpp {
     }; // class PiecewisePoly3
 
 
-    /// Walkg motion generator for humanoid legged robot
+    /// Walk motion generator for humanoid legged robot
     ///
     /// This class computes the reference trajectory of the center of mass
     /// of a humanoid robot, given as input a list of time-stamped steps.
@@ -166,6 +166,11 @@ namespace hpp {
 
       /// set sequence of steps
       ///
+      /// \param steps a vector of steps
+      /// \note number of steps should be set after time sequence and should
+      ///  length of time sequence. If \f$p\f$ is the number of steps, the
+      /// length of the time sequence should be equal to \f$2p-2\f$.
+      ///  See <a href="figures/walkgen.pdf"> this document</a> for details.
       void stepSequence (const Steps_t& steps);
 
       /// get sequence of steps
