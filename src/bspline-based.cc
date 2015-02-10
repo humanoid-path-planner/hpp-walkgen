@@ -272,6 +272,8 @@ namespace hpp {
 	hppDout (info, "grad0 (X0)^T=" << grad0.transpose ());
 	hppDout (info, "grad1 (X1)^T=" << grad1.transpose ());
       }
+      hppDout (info, "X0=" << X0.transpose ());
+      hppDout (info, "X1=" << X1.transpose ());
       vector_t parameters (2*(m_-4));
       for (size_type i=0; i < m_-4; ++i) {
 	parameters [2*i] = X0 [i];
