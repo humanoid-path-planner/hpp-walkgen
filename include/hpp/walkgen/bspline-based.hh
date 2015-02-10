@@ -85,6 +85,12 @@ namespace hpp {
 	  v += delta_v;
 	}
       }
+      /// Constructor with 7 values
+      PiecewisePoly3 (const value_type& tmin, const value_type& tmax,
+		      const vector7_t& values) : lower (tmin), upper (tmax),
+						 values_ (values)
+      {
+      }
       /// Empty constructor
       /// set all fields to Nan
       PiecewisePoly3 () : lower (sqrt (-1.)), upper (sqrt (-1.))
@@ -210,7 +216,7 @@ namespace hpp {
       ///        \f$t=\tau_{2p-3}\f$
       void setEndComState (const vector2_t& position,
 			   const vector2_t& velocity);
-      
+
       /// Solve quadratic program and return resulting cubic B spline
       ///
       CubicBSplinePtr_t solve () const;
@@ -224,6 +230,15 @@ namespace hpp {
       {
 	return zmpRef1_;
       }
+      /// Compute the cost of a com trajectory defined by way points
+      value_type cost (const vector_t& controlPoints);
+
+      /// Compute the cost of the current com trajectory
+      value_type cost () const;
+
+      static value_type integral (value_type lower,value_type upper,
+				  const PiecewisePoly3& P1,
+				  const PiecewisePoly3& P2);
     protected:
       /// Constructor
       ///

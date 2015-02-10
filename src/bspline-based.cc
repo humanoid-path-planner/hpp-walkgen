@@ -160,9 +160,9 @@ namespace hpp {
       }
     }
 
-    static value_type integral (value_type lower,value_type upper,
-				const PiecewisePoly3& P1,
-				const PiecewisePoly3& P2)
+    value_type SplineBased::integral (value_type lower,value_type upper,
+				      const PiecewisePoly3& P1,
+				      const PiecewisePoly3& P2)
     {
       assert (lower == P1.lower);
       assert (upper == P1.upper);
@@ -280,7 +280,47 @@ namespace hpp {
 	parameters [2*i+1] = X1 [i];
       }
       comTrajectory_->setParameters (parameters);
+      hppDout (info, "cost = " << cost ());
       return comTrajectory_;
     }
+
+    value_type SplineBased::cost (const vector_t& controlPoints)
+    {
+      comTrajectory_->setParameters (controlPoints);
+      return cost ();
+    }
+
+    value_type SplineBased::cost () const
+    {
+      // Compute cost at minumum
+      value_type cost = 0;
+      value_type un_sur_omega_2 = sqrt (gravity / height_);
+      for (std::size_t i=0; i < zmpRef0_.size (); ++i) {
+	value_type lower = zmpRef0_ [i].lower;
+	value_type upper = zmpRef0_ [i].upper;
+	vector7_t values;
+	for (std::size_t j = 0; j < 7; ++j) {
+	  value_type t = (6-j)/6. * lower + j/6. * upper;
+	  vector_t zmp = (*comTrajectory_) (t) -
+	    un_sur_omega_2 * comTrajectory_->derivative (t, 2);
+	  values [j] = zmp [0] - zmpRef0_ [i][j];
+	}
+	PiecewisePoly3 px1 (lower, upper, values);
+	PiecewisePoly3 px2 (lower, upper, values);
+	cost += integral (lower, upper, px1, px2);
+
+	for (std::size_t j = 0; j < 7; ++j) {
+	  value_type t = (6-j)/6. * lower + j/6. * upper;
+	  vector_t zmp = (*comTrajectory_) (t) -
+	    un_sur_omega_2 * comTrajectory_->derivative (t, 2);
+	  values [j] = zmp [1] - zmpRef1_ [i][j];
+	}
+	PiecewisePoly3 py1 (lower, upper, values);
+	PiecewisePoly3 py2 (lower, upper, values);
+	cost += integral (lower, upper, py1, py2);
+      }
+      return cost;
+    }
+
   } // namespace walkgen
 } // namespace hpp
