@@ -125,6 +125,7 @@ namespace hpp {
       typedef std::vector <ZmpTrajectory_t> ZmpTrajectories_t;
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
       static value_type gravity;
+      static size_type l;
       struct Step {
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 	Step (const value_type& abs, const value_type& ord) :

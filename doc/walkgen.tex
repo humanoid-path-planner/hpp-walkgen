@@ -16,8 +16,9 @@
 \newcommand\z{z}
 \newcommand\zmp{\mathbf{zmp}}
 \newcommand\zmpref{\mathbf{zmp}_{ref}}
-\newcommand\zmprefx{\mathbf{zmp}_{ref, 0}}
-\newcommand\zmprefy{\mathbf{zmp}_{ref, 1}}
+\newcommand\zmprefx{\mathbf{zmp}_{ref\,0}}
+\newcommand\zmprefy{\mathbf{zmp}_{ref\,1}}
+\newcommand\zmprefi{\mathbf{zmp}_{ref\,i}}
 
 \title {Cubic B-spline based walk generator}
 \author {Florent Lamiraux}
@@ -93,16 +94,19 @@ $i\in\{0,1,\cdots,2p-4\}$ is affine.
 \subsection {Trajectory of the center of mass}
 
 We restrict the trajectory of the center of mass to be a cubic-spline defined by
-Equation~(\ref{eq:b-spline}). As we want the whole center of mass trajectory to
-be defined on interval $[\tau_0, \tau_{2p-3}]$, we get the following relations
+Equation~(\ref{eq:b-spline}). We want
+\begin {itemize}
+\item the whole center of mass trajectory to be defined on interval $[\tau_0, \tau_{2p-3}]$, and
+\item $l\geq 1$ knots on each interval $[\tau_i,\tau_{i+1})$, $i\in\{0,\cdots,2p-3\}$.
+\end{itemize}
+We get the following relations
 between the various parameters:
 \begin {eqnarray*}
-m &=& 2p+4 \\
+m &=& (2p-3)l+7 \\
 t_3 &=& \tau_0 \\
 t_{m-4} &=& \tau_{2p-3} \\
 \end {eqnarray*}
-We need to fix the undefined knots. We arbitrarily set
-
+We set
 \centerline {
   \parbox {.49\linewidth} {
     \begin {eqnarray*}
@@ -119,6 +123,10 @@ We need to fix the undefined knots. We arbitrarily set
     \end {eqnarray*}
   }
 }
+and
+\begin{eqnarray*}
+t_{3 + k\,l + j} &=& \frac{l-j}{l}\, \tau_{k} + \frac{j}{l}\, \tau_{k+1}\ \ \mbox{for } j\in\{0,\cdots,\l-1\}, \ k\in\{0,\cdots,2p-4\}
+\end{eqnarray*}
 
 \subsection {Trajectory of the center of pressure}
 
@@ -254,14 +262,14 @@ H_{0\ i,i+k} &=& \int_{\tau_0}^{\tau_{2p-3}} \z_{i,3} \z_{i+k,3}(t)dt\\
 \end{eqnarray*}
 The coefficients of vector $b_0$ are equal to:
 \begin{eqnarray*}
-  b_{0\,i} &=& \int_{\tau_0}^{\tau_{2p-3}}(Z_{i, i} \mathbb{I}_{[t_i, t_{i+1})} + Z_{i,i+1} \mathbb{I}_{[t_{i+1}, t_{i+2})} +Z_{i,i+2} \mathbb{I}_{[t_{i+2}, t_{i+3})}+Z_{i,i+3} \mathbb{I}_{[t_{i+3}, t_{i+4})})\ \zmprefx(t)dt \\
-  %% b_{0\,0} &=& \int_{\tau_0}^{\tau_{1}} Z_{0,0+3}\ \zmprefx(t)dt \\
-  %% b_{0\,1} &=& \int_{\tau_0}^{\tau_{1}} Z_{1,1+2}\ \zmprefx(t)dt + \int_{\tau_1}^{\tau_{2}} Z_{1,1+3}\ \zmprefx(t)dt \\
-  %% b_{0\,2} &=& \int_{\tau_0}^{\tau_{1}} Z_{2,2+1}\ \zmprefx(t)dt + \int_{\tau_1}^{\tau_{2}} Z_{2,2+2}\ \zmprefx(t)dt + \int_{\tau_2}^{\tau_{3}} Z_{2,2+3}\ \zmprefx(t)dt \\
-  %% b_{0\,i} &=& \int_{\tau_{i-3}}^{\tau_{i-2}} Z_{i,i+0} \zmprefx(t)dt + \int_{\tau_{i-2}}^{\tau_{i-1}} Z_{i,i+1} \zmprefx(t)dt\\
-  %% && + \int_{\tau_{i-1}}^{\tau_{i}} Z_{i,i+2} \zmprefx(t)dt + \int_{\tau_{i}}^{\tau_{i+1}} Z_{i,i+3} \zmprefx(t)dt\\
-  %% &=& \sum_{j=0}^{3} \int_{\tau_{i-3+j}}^{\tau_{i-2+j}} Z_{i,i+j} \zmprefx(t)\,dt\\
-  &=& \sum_{j=\max(0,3-i)}^{\min(3,2p-1-i)} \int_{t_{i+j}}^{t_{i+j+1}} Z_{i,i+j} \zmprefx(t)\,dt
+  b_{0\,i} &=& \int_{t_3}^{t_{m-4}}(Z_{i, i} \mathbb{I}_{[t_i, t_{i+1})} + Z_{i,i+1} \mathbb{I}_{[t_{i+1}, t_{i+2})} +Z_{i,i+2} \mathbb{I}_{[t_{i+2}, t_{i+3})}+Z_{i,i+3} \mathbb{I}_{[t_{i+3}, t_{i+4})})\ \zmprefi(t)dt \\
+  %% b_{0\,0} &=& \int_{t_3}^{t_4} Z_{0,0+3}\ \zmprefi(t)dt \\
+  %% b_{0\,1} &=& \int_{t_3}^{t_4} Z_{1,1+2}\ \zmprefi(t)dt + \int_{t_4}^{t_5} Z_{1,1+3}\ \zmprefi(t)dt \\
+  %% b_{0\,2} &=& \int_{t_3}^{t_4} Z_{2,2+1}\ \zmprefi(t)dt + \int_{t_4}^{t_5} Z_{2,2+2}\ \zmprefi(t)dt + \int_{t_5}^{t_6} Z_{2,2+3}\ \zmprefi(t)dt \\
+  %% b_{0\,i} &=& \int_{t_{i+1}}^{t_{i+2}} Z_{i,i+0} \zmprefi(t)dt + \int_{t_{i+2}}^{t_{i+3}} Z_{i,i+1} \zmprefi(t)dt\\
+  %% && + \int_{t_{i+3}}^{t_{i+4}} Z_{i,i+2} \zmprefi(t)dt + \int_{t_{i+4}}^{t_{i+5}} Z_{i,i+3} \zmprefi(t)dt\\
+  %% &=& \sum_{j=0}^{3} \int_{t_{i+1+j}}^{t_{i+2+j}} Z_{i,i+j} \zmprefi(t)\,dt\\
+  &=& \sum_{j=\max(0,3-i)}^{\min(3,m-5-i)} \int_{t_{i+j}}^{t_{i+j+1}} Z_{i,i+j} \zmprefi(t)\,dt
 \end{eqnarray*}
 
 \subsubsection* {Special cases for boundary conditions}

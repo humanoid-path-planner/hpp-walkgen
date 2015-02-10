@@ -25,6 +25,8 @@
 namespace hpp {
   namespace walkgen {
     value_type SplineBased::gravity = 9.81;
+    size_type SplineBased::l = 1;
+
     SplineBasedPtr_t SplineBased::create (const value_type& height)
     {
       SplineBased* ptr = new SplineBased (height);
@@ -54,7 +56,7 @@ namespace hpp {
       steps_ = steps;
       boundaryConditions_.clear ();
       std::size_t p = steps.size ();
-      m_ = 2*p + 4;
+      m_ = (2*p - 3)*l + 7;
       if (p < 3) {
 	throw std::runtime_error
 	  ("Step sequence should contain at least 3 steps");
@@ -69,12 +71,16 @@ namespace hpp {
       // build knot vector
       std::vector <value_type> knots (m_);
       double tau0 = tau_ [0];
-      knots [0] = tau0 - 3; knots [1] = tau0 - 2;  knots [2] = tau0 - 1;
-      for (std::size_t i=3; (size_type)i < m_-3; ++i) {
-	knots [i] = tau_ [i-3];
+      knots [0] = tau0 - 3.; knots [1] = tau0 - 2.;  knots [2] = tau0 - 1.;
+      for (size_type k=0; k < (size_type)(2*p-3); ++k) {
+	for (size_type j=0; j < l; ++j) {
+	  knots [3+k*l+j] = ((double)(l-j))/l * tau_ [k] +
+	    ((double)j)/l * tau_ [k+1];
+	}
       }
-      knots [m_-3] = tau_ [m_ - 7] + 1; knots [m_-2] = tau_ [m_ - 7] + 2;
-      knots [m_-1] = tau_ [m_ - 7] + 3;
+      knots [m_-4] = tau_ [2*p-3];
+      knots [m_-3] = knots [m_-4] + 1.; knots [m_-2] = knots [m_-4] + 2.;
+      knots [m_-1] = knots [m_-4] + 3.;
       // create spline
       vector_t parameters (2*(m_-4));
       comTrajectory_ = CubicBSplinePtr_t (new CubicBSpline
@@ -201,32 +207,66 @@ namespace hpp {
       // Fill zmpref
       zmpRef0_.clear ();
       zmpRef1_.clear ();
-      zmpRef0_.push_back (PiecewisePoly3 (tau_ [0], tau_ [1], zmpRefInit_ [0],
-					  steps_ [1][0]));
-      zmpRef1_.push_back (PiecewisePoly3 (tau_ [0], tau_ [1], zmpRefInit_ [1],
-					  steps_ [1][1]));
-      zmpRef0_.push_back (PiecewisePoly3 (tau_ [1], tau_ [2], steps_ [1][0],
-					  steps_ [1][0]));
-      zmpRef1_.push_back (PiecewisePoly3 (tau_ [1], tau_ [2], steps_ [1][1],
-					  steps_ [1][1]));
-      for (size_type i=1; i < (size_type)p-2; ++i) {
-	zmpRef0_.push_back (PiecewisePoly3 (tau_ [2*i], tau_ [2*i+1],
-					    steps_ [i][0], steps_ [i+1][0]));
-	zmpRef1_.push_back (PiecewisePoly3 (tau_ [2*i], tau_ [2*i+1],
-					    steps_ [i][1], steps_ [i+1][1]));
-	zmpRef0_.push_back (PiecewisePoly3 (tau_ [2*i+1], tau_ [2*i+2],
-					    steps_ [i+1][0], steps_ [i+1][0]));
-	zmpRef1_.push_back (PiecewisePoly3 (tau_ [2*i+1], tau_ [2*i+2],
-					    steps_ [i+1][1], steps_ [i+1][1]));
+      for (size_type j=0; j < l; ++j) {
+	zmpRef0_.push_back (PiecewisePoly3 (knots [3+j], knots [4+j],
+					    zmpRefInit_ [0]*(l-j)/l +
+					    steps_ [1][0]*j/l,
+					    zmpRefInit_ [0]*(l-j-1)/l +
+					    steps_ [1][0]*(j+1)/l));
+	zmpRef1_.push_back (PiecewisePoly3 (knots [3+j], knots [4+j],
+					    zmpRefInit_ [1]*(l-j)/l +
+					    steps_ [1][1]*j/l,
+					    zmpRefInit_ [1]*(l-j-1)/l +
+					    steps_ [1][1]*(j+1)/l));
       }
-      zmpRef0_.push_back (PiecewisePoly3 (tau_ [2*p-4], tau_ [2*p-3],
-					  steps_ [p-2][0], zmpRefEnd_ [0]));
-      zmpRef1_.push_back (PiecewisePoly3 (tau_ [2*p-4], tau_ [2*p-3],
-					  steps_ [p-2][1], zmpRefEnd_ [1]));
+      for (size_type j=0; j < l; ++j) {
+	zmpRef0_.push_back (PiecewisePoly3 (knots [3+l+j], knots [4+l+j],
+					    steps_ [1][0],
+					    steps_ [1][0]));
+	zmpRef1_.push_back (PiecewisePoly3 (knots [3+l+j], knots [4+l+j],
+					    steps_ [1][1],
+					    steps_ [1][1]));
+      }
+      for (size_type i=1; i < (size_type)p-2; ++i) {
+	for (size_type j=0; j < l; ++j) {
+	  zmpRef0_.push_back (PiecewisePoly3
+			      (knots [3+(2*i)*l+j], knots [4+(2*i)*l+j],
+			       steps_ [i][0]*(l-j)/l + steps_ [i+1][0]*j/l,
+			       steps_ [i][0]*(l-j-1)/l +
+			       steps_ [i+1][0]*(j+1)/l));
+	  zmpRef1_.push_back (PiecewisePoly3
+			      (knots [3+(2*i)*l+j], knots [4+(2*i)*l+j],
+			       steps_ [i][1]*(l-j)/l + steps_ [i+1][1]*j/l,
+			       steps_ [i][1]*(l-j-1)/l +
+			       steps_ [i+1][1]*(j+1)/l));
+	}
+	for (size_type j=0; j < l; ++j) {
+	  zmpRef0_.push_back (PiecewisePoly3
+			      (knots [3+(1+2*i)*l+j], knots [4+(1+2*i)*l+j],
+			       steps_ [i+1][0], steps_ [i+1][0]));
+	  zmpRef1_.push_back (PiecewisePoly3
+			      (knots [3+(1+2*i)*l+j], knots [4+(1+2*i)*l+j],
+			       steps_ [i+1][1], steps_ [i+1][1]));
+	}
+      }
+      for (size_type j=0; j < l; ++j) {
+	zmpRef0_.push_back (PiecewisePoly3 (knots [3+(2*p-4)*l+j],
+					    knots [4+(2*p-4)*l+j],
+					    steps_ [p-2][0]*(l-j)/l +
+					    zmpRefEnd_ [0]*j/l,
+					    steps_ [p-2][0]*(l-j-1)/l +
+					    zmpRefEnd_ [0]*(j+1)/l));
+	zmpRef1_.push_back (PiecewisePoly3 (knots [3+(2*p-4)*l+j],
+					    knots [4+(2*p-4)*l+j],
+					    steps_ [p-2][1]*(l-j)/l +
+					    zmpRefEnd_ [1]*j/l,
+					    steps_ [p-2][1]*(l-j-1)/l +
+					    zmpRefEnd_ [1]*(j+1)/l));
+      }
       // Fill b0_ and b1_
       b0_.setZero (); b1_.setZero ();
       for (size_type i = 0; i < m_ - 4; ++i) {
-	for (std::size_t j = std::max (0, 3-i); j < 4 && j < 2*p-i; ++j) {
+	for (size_type j = std::max (0, 3-i); j < 4 && j < m_-4-i; ++j) {
 	  b0_ [i]  += integral (knots [i+j], knots [i+j+1],
 				Z_ [i][j], zmpRef0_ [i+j-3]);
 	  b1_ [i]  += integral (knots [i+j], knots [i+j+1],
@@ -236,6 +276,7 @@ namespace hpp {
       hppDout (info, "b0_=" << std::endl << b0_.transpose ());
       hppDout (info, "b1_=" << std::endl << b1_.transpose ());
     }
+
     CubicBSplinePtr_t SplineBased::solve () const
     {
       defineProblem ();
