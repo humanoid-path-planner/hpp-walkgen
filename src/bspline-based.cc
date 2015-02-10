@@ -45,7 +45,7 @@ namespace hpp {
     {
       tau_ = times;
       boundaryConditions_.clear ();
-      
+
     }
 
     void SplineBased::stepSequence (const Steps_t& steps)
@@ -176,7 +176,7 @@ namespace hpp {
 	9./35 * P1 [5] * P2 [5] +
 	41./840 * P1 [6] * P2 [6];
       res *= length;
-      return res;      
+      return res;
     }
 
     void SplineBased::defineProblem () const
@@ -244,18 +244,18 @@ namespace hpp {
 	vector_t X_10 = svd.solve (c1_);
 	const matrix_t& V = svd.matrixV ();
 	size_type rank = svd.rank ();
-	matrix_t V0THi = V.rightCols (m_-4-rank).transpose ()*H0_;
+	matrix_t V0THi (V.rightCols (m_-4-rank).transpose ()*H0_);
 	Eigen::LLT <matrix_t> llt (V0THi*V.rightCols (m_-4-rank));
-	vector_t rhs0 = V.rightCols (m_-4-rank).transpose ()*b0_ - V0THi*X_00;
-	vector_t rhs1 = V.rightCols (m_-4-rank).transpose ()*b1_ - V0THi*X_10;
-	vector_t u0 = llt.solve (rhs0);
-	vector_t u1 = llt.solve (rhs1);
+	vector_t rhs0 (V.rightCols (m_-4-rank).transpose ()*b0_ - V0THi*X_00);
+	vector_t rhs1 (V.rightCols (m_-4-rank).transpose ()*b1_ - V0THi*X_10);
+	vector_t u0 (llt.solve (rhs0));
+	vector_t u1 (llt.solve (rhs1));
 	X0 = X_00 + V.rightCols (m_-4-rank) * u0;
 	X1 = X_10 + V.rightCols (m_-4-rank) * u1;
       } else {
 	Eigen::LLT <matrix_t> llt (H0_);
-	X0 = llt.solve (b0_);
-	X1 = llt.solve (b1_);
+	X0 = b0_; llt.solveInPlace (X0);
+	X1 = b1_; llt.solveInPlace (X1);
       }
       vector_t parameters (2*(m_-4));
       for (size_type i=0; i < m_-4; ++i) {
