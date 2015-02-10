@@ -119,8 +119,8 @@ BOOST_AUTO_TEST_CASE (six_steps)
 	    << "set xlabel 'x'" << std::endl
 	    << "set ylabel 'y'" << std::endl;
   std::cout << "plot '-' using 2:3 title 'zmp ref' with points\n";
-  const std::vector <PiecewisePoly3>& zmpRefx = pg->zmpRefx ();
-  const std::vector <PiecewisePoly3>& zmpRefy = pg->zmpRefy ();
+  std::vector <PiecewisePoly3> zmpRefx = pg->zmpRefx ();
+  std::vector <PiecewisePoly3> zmpRefy = pg->zmpRefy ();
   BOOST_CHECK (zmpRefx.size () == zmpRefy.size ());
   for (std::size_t i=0; i<zmpRefx.size (); ++i) {
     const PiecewisePoly3& px = zmpRefx [i];
@@ -133,7 +133,43 @@ BOOST_AUTO_TEST_CASE (six_steps)
     }
   }
   std::cout << "e" << std::endl;
-  std::cout << "set term wxt persist title 'com trajectory' 1 font ',5'"
+  std::cout << "set term wxt persist title 'zmp ref' 1 font ',5'" << std::endl
+	    << "set xlabel 't'" << std::endl
+	    << "set ylabel 'x'" << std::endl;
+  std::cout << "plot '-' using 1:2 title 'zmp ref x' with points\n";
+  zmpRefx = pg->zmpRefx ();
+  zmpRefy = pg->zmpRefy ();
+  BOOST_CHECK (zmpRefx.size () == zmpRefy.size ());
+  for (std::size_t i=0; i<zmpRefx.size (); ++i) {
+    const PiecewisePoly3& px = zmpRefx [i];
+    const PiecewisePoly3& py = zmpRefy [i];
+    value_type t = px.lower;
+    value_type delta = (px.upper - px.lower)/6.;
+    for (std::size_t j=0; j<7; ++j) {
+      std::cout << t << "\t" << px [j] << "\t" << py [j] << std::endl;
+      t += delta;
+    }
+  }
+  std::cout << "e" << std::endl;
+  std::cout << "set term wxt persist title 'zmp ref' 2 font ',5'" << std::endl
+	    << "set xlabel 't'" << std::endl
+	    << "set ylabel 'y'" << std::endl;
+  std::cout << "plot '-' using 1:3 title 'zmp ref x' with points\n";
+  zmpRefx = pg->zmpRefx ();
+  zmpRefy = pg->zmpRefy ();
+  BOOST_CHECK (zmpRefx.size () == zmpRefy.size ());
+  for (std::size_t i=0; i<zmpRefx.size (); ++i) {
+    const PiecewisePoly3& px = zmpRefx [i];
+    const PiecewisePoly3& py = zmpRefy [i];
+    value_type t = px.lower;
+    value_type delta = (px.upper - px.lower)/6.;
+    for (std::size_t j=0; j<7; ++j) {
+      std::cout << t << "\t" << px [j] << "\t" << py [j] << std::endl;
+      t += delta;
+    }
+  }
+  std::cout << "e" << std::endl;
+  std::cout << "set term wxt persist title 'com trajectory' 3 font ',5'"
 	    << std::endl
 	    << "set xlabel 'x'" << std::endl
 	    << "set ylabel 'y'" << std::endl;
@@ -146,13 +182,61 @@ BOOST_AUTO_TEST_CASE (six_steps)
     std::cout << t << "\t" << com [0] << "\t" << com [1] << std::endl;
   }
   std::cout << "e" << std::endl;
+  std::cout << "set term wxt persist title 'com trajectory' 4 font ',5'"
+	    << std::endl
+	    << "set xlabel 't'" << std::endl
+	    << "set ylabel 'x'" << std::endl;
+  std::cout << "plot '-' using 1:2 title 'com' with lines\n";
+  // com x
+  for (double t = comTrajectory->timeRange ().first;
+       t <= comTrajectory->timeRange ().second; t+=dt) {
+    vector_t com = (*comTrajectory) (t);
+    std::cout << t << "\t" << com [0] << "\t" << com [1] << std::endl;
+  }
+  std::cout << "e" << std::endl;
+  std::cout << "set term wxt persist title 'com trajectory' 5 font ',5'"
+	    << std::endl
+	    << "set xlabel 't'" << std::endl
+	    << "set ylabel 'y'" << std::endl;
+  std::cout << "plot '-' using 1:3 title 'com' with lines\n";
+  // com y
+  for (double t = comTrajectory->timeRange ().first;
+       t <= comTrajectory->timeRange ().second; t+=dt) {
+    vector_t com = (*comTrajectory) (t);
+    std::cout << t << "\t" << com [0] << "\t" << com [1] << std::endl;
+  }
+  std::cout << "e" << std::endl;
   // zmp
-  std::cout << "set term wxt persist title 'zmp' 2 font ',5'"
+  std::cout << "set term wxt persist title 'zmp' 6 font ',5'"
 	    << std::endl
 	    << "set xlabel 'x'" << std::endl
 	    << "set ylabel 'y'" << std::endl;
   std::cout << "plot '-' using 2:3 title 'zmp' with lines\n";
   value_type un_sur_omega_2 = sqrt (SplineBased::gravity / height);
+  for (double t = comTrajectory->timeRange ().first;
+       t <= comTrajectory->timeRange ().second; t+=dt) {
+    vector_t com = (*comTrajectory) (t);
+    vector_t zmp = com - un_sur_omega_2 * comTrajectory->derivative (t, 2);
+    std::cout << t << "\t" << zmp [0] << "\t" << zmp [1] << std::endl;
+  }
+  std::cout << "e" << std::endl;
+  std::cout << "set term wxt persist title 'zmp' 7 font ',5'"
+	    << std::endl
+	    << "set xlabel 't'" << std::endl
+	    << "set ylabel 'x'" << std::endl;
+  std::cout << "plot '-' using 1:2 title 'zmp' with lines\n";
+  for (double t = comTrajectory->timeRange ().first;
+       t <= comTrajectory->timeRange ().second; t+=dt) {
+    vector_t com = (*comTrajectory) (t);
+    vector_t zmp = com - un_sur_omega_2 * comTrajectory->derivative (t, 2);
+    std::cout << t << "\t" << zmp [0] << "\t" << zmp [1] << std::endl;
+  }
+  std::cout << "e" << std::endl;
+  std::cout << "set term wxt persist title 'zmp' 8 font ',5'"
+	    << std::endl
+	    << "set xlabel 't'" << std::endl
+	    << "set ylabel 'y'" << std::endl;
+  std::cout << "plot '-' using 1:3 title 'zmp' with lines\n";
   for (double t = comTrajectory->timeRange ().first;
        t <= comTrajectory->timeRange ().second; t+=dt) {
     vector_t com = (*comTrajectory) (t);
