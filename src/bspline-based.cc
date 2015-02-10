@@ -19,6 +19,7 @@
 #include <iostream>
 #include <sstream>
 #include <roboptim/trajectory/cubic-b-spline.hh>
+#include <hpp/util/debug.hh>
 #include <hpp/walkgen/bspline-based.hh>
 
 namespace hpp {
@@ -196,6 +197,7 @@ namespace hpp {
 	  H0_ (i+k, i) = H0_ (i, i+k);
 	}
       }
+      hppDout (info, "H0_ = " << std::endl << H0_);
       // Fill zmpref
       zmpRef0_.clear ();
       zmpRef1_.clear ();
@@ -231,6 +233,8 @@ namespace hpp {
 				Z_ [i][j], zmpRef1_ [i+j-3]);
 	}
       }
+      hppDout (info, "b0_=" << std::endl << b0_.transpose ());
+      hppDout (info, "b1_=" << std::endl << b1_.transpose ());
     }
     CubicBSplinePtr_t SplineBased::solve () const
     {
@@ -252,10 +256,21 @@ namespace hpp {
 	vector_t u1 (llt.solve (rhs1));
 	X0 = X_00 + V.rightCols (m_-4-rank) * u0;
 	X1 = X_10 + V.rightCols (m_-4-rank) * u1;
+	// Check optimality
+	vector_t grad0 (H0_*X0 - b0_);
+	vector_t grad1 (H0_*X1 - b1_);
+	hppDout (info, "grad0 (X0)^T V0="
+		 << grad0.transpose ()*V.rightCols (m_-4-rank));
+	hppDout (info, "grad1 (X1)^T V0="
+		 << grad1.transpose ()*V.rightCols (m_-4-rank));
       } else {
 	Eigen::LLT <matrix_t> llt (H0_);
 	X0 = b0_; llt.solveInPlace (X0);
 	X1 = b1_; llt.solveInPlace (X1);
+	vector_t grad0 (H0_*X0 - b0_);
+	vector_t grad1 (H0_*X1 - b1_);
+	hppDout (info, "grad0 (X0)^T=" << grad0.transpose ());
+	hppDout (info, "grad1 (X1)^T=" << grad1.transpose ());
       }
       vector_t parameters (2*(m_-4));
       for (size_type i=0; i < m_-4; ++i) {
