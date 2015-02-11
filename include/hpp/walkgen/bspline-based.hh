@@ -121,6 +121,8 @@ namespace hpp {
     class HPP_WALKGEN_DLLAPI SplineBased
     {
     public:
+      typedef std::vector <PiecewisePoly3> ZmpTrajectory_t;
+      typedef std::vector <ZmpTrajectory_t> ZmpTrajectories_t;
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
       static value_type gravity;
       struct Step {
@@ -221,12 +223,12 @@ namespace hpp {
       ///
       CubicBSplinePtr_t solve () const;
       /// Getter to representation of zmp ref abscissa
-      const std::vector <PiecewisePoly3>& zmpRefx () const
+      const ZmpTrajectory_t& zmpRefx () const
       {
 	return zmpRef0_;
       }
       /// Getter to representation of zmp ref abscissa
-      const std::vector <PiecewisePoly3>& zmpRefy () const
+      const ZmpTrajectory_t& zmpRefy () const
       {
 	return zmpRef1_;
       }
@@ -239,6 +241,12 @@ namespace hpp {
       static value_type integral (value_type lower,value_type upper,
 				  const PiecewisePoly3& P1,
 				  const PiecewisePoly3& P2);
+
+      /// Get base functions of Zmp
+      const ZmpTrajectories_t& zmpBasisFunctions () const
+      {
+	return Z_;
+      }
     protected:
       /// Constructor
       ///
@@ -263,9 +271,9 @@ namespace hpp {
       mutable vector_t b0_, b1_;
       mutable matrix_t A0_;
       mutable vector_t c0_, c1_;
-      mutable std::vector < std::vector <PiecewisePoly3> > Z_;
-      mutable std::vector <PiecewisePoly3> zmpRef0_;
-      mutable std::vector <PiecewisePoly3> zmpRef1_;
+      mutable ZmpTrajectories_t Z_;
+      mutable ZmpTrajectory_t zmpRef0_;
+      mutable ZmpTrajectory_t zmpRef1_;
     }; // class SplineBased
   } // namespace walkgen
 } // namespace hpp
