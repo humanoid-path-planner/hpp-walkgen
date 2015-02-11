@@ -244,6 +244,8 @@ namespace hpp {
 	// constraints are defined
 	Eigen::JacobiSVD <matrix_t> svd (A0_, Eigen::ComputeThinU |
 					 Eigen::ComputeFullV);
+	hppDout (info, "A0 singular values: "
+		 << svd.singularValues ().transpose ());
 	vector_t X_00 = svd.solve (c0_);
 	vector_t X_10 = svd.solve (c1_);
 	const matrix_t& V = svd.matrixV ();
@@ -264,9 +266,12 @@ namespace hpp {
 	hppDout (info, "grad1 (X1)^T V0="
 		 << grad1.transpose ()*V.rightCols (m_-4-rank));
       } else {
-	Eigen::LLT <matrix_t> llt (H0_);
-	X0 = b0_; llt.solveInPlace (X0);
-	X1 = b1_; llt.solveInPlace (X1);
+	Eigen::JacobiSVD <matrix_t> svd2 (H0_, Eigen::ComputeFullU |
+					 Eigen::ComputeFullV);
+	hppDout (info, "H0 singular values: "
+		 << svd2.singularValues ().transpose ());
+	X0 = svd2.solve (b0_);
+	X1 = svd2.solve (b1_);
 	vector_t grad0 (H0_*X0 - b0_);
 	vector_t grad1 (H0_*X1 - b1_);
 	hppDout (info, "grad0 (X0)^T=" << grad0.transpose ());
