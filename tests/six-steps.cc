@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE (six_steps)
     }
   }
   std::cout << "e" << std::endl;
-  std::cout << "set term wxt persist title 'zmp ref' 1 font ',5'" << std::endl
+  std::cout << "set term wxt persist title 'zmp ref x' 1 font ',5'" << std::endl
 	    << "set xlabel 't'" << std::endl
 	    << "set ylabel 'x'" << std::endl;
   std::cout << "plot '-' using 1:2 title 'zmp ref x' with points\n";
@@ -109,10 +109,10 @@ BOOST_AUTO_TEST_CASE (six_steps)
     }
   }
   std::cout << "e" << std::endl;
-  std::cout << "set term wxt persist title 'zmp ref' 2 font ',5'" << std::endl
+  std::cout << "set term wxt persist title 'zmp ref y' 2 font ',5'" << std::endl
 	    << "set xlabel 't'" << std::endl
 	    << "set ylabel 'y'" << std::endl;
-  std::cout << "plot '-' using 1:3 title 'zmp ref x' with points\n";
+  std::cout << "plot '-' using 1:3 title 'zmp ref y' with points\n";
   zmpRefx = pg->zmpRefx ();
   zmpRefy = pg->zmpRefy ();
   BOOST_CHECK (zmpRefx.size () == zmpRefy.size ());
@@ -140,11 +140,11 @@ BOOST_AUTO_TEST_CASE (six_steps)
     std::cout << t << "\t" << com [0] << "\t" << com [1] << std::endl;
   }
   std::cout << "e" << std::endl;
-  std::cout << "set term wxt persist title 'com trajectory' 4 font ',5'"
+  std::cout << "set term wxt persist title 'com trajectory x' 4 font ',5'"
 	    << std::endl
 	    << "set xlabel 't'" << std::endl
 	    << "set ylabel 'x'" << std::endl;
-  std::cout << "plot '-' using 1:2 title 'com' with lines\n";
+  std::cout << "plot '-' using 1:2 title 'com x' with lines\n";
   // com x
   for (double t = comTrajectory->timeRange ().first;
        t <= comTrajectory->timeRange ().second; t+=dt) {
@@ -152,11 +152,11 @@ BOOST_AUTO_TEST_CASE (six_steps)
     std::cout << t << "\t" << com [0] << "\t" << com [1] << std::endl;
   }
   std::cout << "e" << std::endl;
-  std::cout << "set term wxt persist title 'com trajectory' 5 font ',5'"
+  std::cout << "set term wxt persist title 'com trajectory y' 5 font ',5'"
 	    << std::endl
 	    << "set xlabel 't'" << std::endl
 	    << "set ylabel 'y'" << std::endl;
-  std::cout << "plot '-' using 1:3 title 'com' with lines\n";
+  std::cout << "plot '-' using 1:3 title 'com y' with lines\n";
   // com y
   for (double t = comTrajectory->timeRange ().first;
        t <= comTrajectory->timeRange ().second; t+=dt) {
@@ -178,11 +178,11 @@ BOOST_AUTO_TEST_CASE (six_steps)
     std::cout << t << "\t" << zmp [0] << "\t" << zmp [1] << std::endl;
   }
   std::cout << "e" << std::endl;
-  std::cout << "set term wxt persist title 'zmp' 7 font ',5'"
+  std::cout << "set term wxt persist title 'zmp x' 7 font ',5'"
 	    << std::endl
 	    << "set xlabel 't'" << std::endl
 	    << "set ylabel 'x'" << std::endl;
-  std::cout << "plot '-' using 1:2 title 'zmp' with lines\n";
+  std::cout << "plot '-' using 1:2 title 'zmp x' with lines\n";
   for (double t = comTrajectory->timeRange ().first;
        t <= comTrajectory->timeRange ().second; t+=dt) {
     vector_t com = (*comTrajectory) (t);
@@ -190,11 +190,11 @@ BOOST_AUTO_TEST_CASE (six_steps)
     std::cout << t << "\t" << zmp [0] << "\t" << zmp [1] << std::endl;
   }
   std::cout << "e" << std::endl;
-  std::cout << "set term wxt persist title 'zmp' 8 font ',5'"
+  std::cout << "set term wxt persist title 'zmp y' 8 font ',5'"
 	    << std::endl
 	    << "set xlabel 't'" << std::endl
 	    << "set ylabel 'y'" << std::endl;
-  std::cout << "plot '-' using 1:3 title 'zmp' with lines\n";
+  std::cout << "plot '-' using 1:3 title 'zmp y' with lines\n";
   for (double t = comTrajectory->timeRange ().first;
        t <= comTrajectory->timeRange ().second; t+=dt) {
     vector_t com = (*comTrajectory) (t);
