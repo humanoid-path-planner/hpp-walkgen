@@ -170,7 +170,7 @@ BOOST_AUTO_TEST_CASE (six_steps)
 	    << "set xlabel 'x'" << std::endl
 	    << "set ylabel 'y'" << std::endl;
   std::cout << "plot '-' using 2:3 title 'zmp' with lines\n";
-  value_type un_sur_omega_2 = sqrt (SplineBased::gravity / height);
+  value_type un_sur_omega_2 = sqrt (height / SplineBased::gravity);
   for (double t = comTrajectory->timeRange ().first;
        t <= comTrajectory->timeRange ().second; t+=dt) {
     vector_t com = (*comTrajectory) (t);

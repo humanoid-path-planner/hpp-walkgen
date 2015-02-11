@@ -141,7 +141,7 @@ namespace hpp {
 
     void SplineBased::buildPolynomialVector () const
     {
-      value_type un_sur_omega_2 = sqrt (gravity / height_);
+      value_type un_sur_omega_2 = sqrt (height_ / gravity);
       const polynomials3vectors_t& bases = comTrajectory_->basisPolynomials ();
       assert ((size_type)bases.size () == m_ - 4);
       const std::vector< value_type >& knots = comTrajectory_->knotVector ();
@@ -299,7 +299,7 @@ namespace hpp {
     {
       // Compute cost at minumum
       value_type cost = 0;
-      value_type un_sur_omega_2 = sqrt (gravity / height_);
+      value_type un_sur_omega_2 = sqrt (height_ / gravity);
       for (std::size_t i=0; i < zmpRef0_.size (); ++i) {
 	value_type lower = zmpRef0_ [i].lower;
 	value_type upper = zmpRef0_ [i].upper;
