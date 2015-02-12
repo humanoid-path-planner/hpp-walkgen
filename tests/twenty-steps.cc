@@ -36,7 +36,7 @@ using hpp::walkgen::vector_t;
 
 BOOST_AUTO_TEST_CASE (six_steps)
 {
-  // Define six steps
+  // Define twenty steps
   SplineBased::Steps_t steps;
   typedef SplineBased::Step Step;
   steps.push_back (Step (0, -.1));
