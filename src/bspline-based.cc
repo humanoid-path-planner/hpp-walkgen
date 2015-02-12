@@ -251,11 +251,15 @@ namespace hpp {
 	const matrix_t& V = svd.matrixV ();
 	size_type rank = svd.rank ();
 	matrix_t V0THi (V.rightCols (m_-4-rank).transpose ()*H0_);
-	Eigen::LLT <matrix_t> llt (V0THi*V.rightCols (m_-4-rank));
+	Eigen::JacobiSVD <matrix_t> svd1 (V0THi*V.rightCols (m_-4-rank),
+					  Eigen::ComputeThinU |
+					  Eigen::ComputeThinV);
+	hppDout (info, "V0^T H0 V0 singular values: "
+		 << svd1.singularValues ().transpose ());
 	vector_t rhs0 (V.rightCols (m_-4-rank).transpose ()*b0_ - V0THi*X_00);
 	vector_t rhs1 (V.rightCols (m_-4-rank).transpose ()*b1_ - V0THi*X_10);
-	vector_t u0 (llt.solve (rhs0));
-	vector_t u1 (llt.solve (rhs1));
+	vector_t u0 (svd1.solve (rhs0));
+	vector_t u1 (svd1.solve (rhs1));
 	X0 = X_00 + V.rightCols (m_-4-rank) * u0;
 	X1 = X_10 + V.rightCols (m_-4-rank) * u1;
 	// Check optimality
@@ -266,8 +270,8 @@ namespace hpp {
 	hppDout (info, "grad1 (X1)^T V0="
 		 << grad1.transpose ()*V.rightCols (m_-4-rank));
       } else {
-	Eigen::JacobiSVD <matrix_t> svd2 (H0_, Eigen::ComputeFullU |
-					 Eigen::ComputeFullV);
+	Eigen::JacobiSVD <matrix_t> svd2 (H0_, Eigen::ComputeThinU |
+					 Eigen::ComputeThinV);
 	hppDout (info, "H0 singular values: "
 		 << svd2.singularValues ().transpose ());
 	X0 = svd2.solve (b0_);
