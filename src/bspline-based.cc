@@ -25,7 +25,7 @@
 namespace hpp {
   namespace walkgen {
     value_type SplineBased::gravity = 9.81;
-    size_type SplineBased::l = 20;
+    size_type SplineBased::l = 3;
 
     SplineBasedPtr_t SplineBased::create (const value_type& height)
     {
