@@ -38,18 +38,18 @@ using hpp::walkgen::vector_t;
 
 BOOST_AUTO_TEST_CASE (base_functions)
 {
-    // Define six steps
-  SplineBased::Steps_t steps;
-  typedef SplineBased::Step Step;
+    // Define six foot prints
+  SplineBased::FootPrints_t footPrints;
+  typedef SplineBased::FootPrint FootPrint;
   typedef SplineBased::ZmpTrajectory_t ZmpTrajectory_t;
   typedef SplineBased::ZmpTrajectories_t ZmpTrajectories_t;
 
-  steps.push_back (Step (0, -.1));
-  steps.push_back (Step (0, .1));
-  steps.push_back (Step (0.2, -.1));
-  steps.push_back (Step (0.4, .1));
-  steps.push_back (Step (0.6, -.1));
-  steps.push_back (Step (0.6, .1));
+  footPrints.push_back (FootPrint (0, -.1));
+  footPrints.push_back (FootPrint (0, .1));
+  footPrints.push_back (FootPrint (0.2, -.1));
+  footPrints.push_back (FootPrint (0.4, .1));
+  footPrints.push_back (FootPrint (0.6, -.1));
+  footPrints.push_back (FootPrint (0.6, .1));
 
   // Define times
   Times_t times;
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE (base_functions)
   value_type height = .8;
   SplineBasedPtr_t pg (SplineBased::create (height));
   pg->timeSequence (times);
-  pg->stepSequence (steps);
+  pg->footPrintSequence (footPrints);
   pg->solve ();
 
   size_type i = 0;

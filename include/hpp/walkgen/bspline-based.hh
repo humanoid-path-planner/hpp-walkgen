@@ -114,7 +114,7 @@ namespace hpp {
     /// Walk motion generator for humanoid legged robot
     ///
     /// This class computes the reference trajectory of the center of mass
-    /// of a humanoid robot, given as input a list of time-stamped steps.
+    /// of a humanoid robot, given as input a list of time-stamped foot-prints.
     ///
     /// The trajectory of the center of mass is obtained by optimization for the
     /// linear so called table cart model.
@@ -126,9 +126,9 @@ namespace hpp {
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
       static value_type gravity;
       static size_type l;
-      struct Step {
+      struct FootPrint {
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-	Step (const value_type& abs, const value_type& ord) :
+	FootPrint (const value_type& abs, const value_type& ord) :
 	  position (abs, ord)
 	{
 	}
@@ -137,7 +137,7 @@ namespace hpp {
 	{
 	  return position [index];
 	}
-      }; // struct Step
+      }; // struct FootPrint
       struct BoundaryCondition
       {
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -151,7 +151,8 @@ namespace hpp {
 	vector2_t position;
 	vector2_t velocity;
       }; // struct BoundaryCondition
-      typedef std::vector <Step, Eigen::aligned_allocator <Step> > Steps_t;
+      typedef std::vector <FootPrint, Eigen::aligned_allocator <FootPrint> >
+	FootPrints_t;
       typedef std::vector <BoundaryCondition,
 			   Eigen::aligned_allocator <BoundaryCondition> >
 	BoundaryConditions_t;
@@ -173,26 +174,27 @@ namespace hpp {
 	return tau_;
       }
 
-      /// set sequence of steps
+      /// set sequence of foot prints
       ///
-      /// \param steps a vector of steps
-      /// \note number of steps should be set after time sequence and should
-      ///  length of time sequence. If \f$p\f$ is the number of steps, the
+      /// \param footPrints a vector of foot prints
+      /// \note number of foot prints should be set after time sequence and
+      ///  should fit
+      ///  length of time sequence. If \f$p\f$ is the number of foot prints, the
       /// length of the time sequence should be equal to \f$2p-2\f$.
       ///  See <a href="figures/walkgen.pdf"> this document</a> for details.
-      void stepSequence (const Steps_t& steps);
+      void footPrintSequence (const FootPrints_t& footPrints);
 
-      /// get sequence of steps
-      const Steps_t& stepSequence () const
+      /// get sequence of foot prints
+      const FootPrints_t& footPrintSequence () const
       {
-	return steps_;
+	return footPrints_;
       }
 
       /// Specify zmpref boundary conditions
       ///
       /// \param init, end initial and end values of zmpref trajectory
       /// \note If not specified, the middle of the first (respectively last)
-      ///       steps.
+      ///       foot prints.
       /// \note setting step sequence discards zmp boundary conditions.
       void zmpRefBoundaryConditions (const vector2_t& init,
 				     const vector2_t& end)
@@ -263,7 +265,7 @@ namespace hpp {
       SplineBasedWkPtr_t weakPtr_;
       mutable size_type m_;
       Times_t tau_;
-      Steps_t steps_;
+      FootPrints_t footPrints_;
       BoundaryConditions_t boundaryConditions_;
       vector2_t zmpRefInit_;
       vector2_t zmpRefEnd_;

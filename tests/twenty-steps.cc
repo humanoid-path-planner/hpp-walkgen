@@ -16,9 +16,10 @@
 // hpp-walkgen  If not, see
 // <http://www.gnu.org/licenses/>.
 
+#include <hpp/util/debug.hh>
 #include <hpp/walkgen/bspline-based.hh>
 
-#define BOOST_TEST_MODULE six_steps
+#define BOOST_TEST_MODULE six_footPrints
 #include <boost/test/included/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE (test_hpp_walkgen)
@@ -34,31 +35,31 @@ using hpp::walkgen::size_type;
 using hpp::walkgen::vector2_t;
 using hpp::walkgen::vector_t;
 
-BOOST_AUTO_TEST_CASE (six_steps)
+BOOST_AUTO_TEST_CASE (six_footPrints)
 {
-  // Define twenty steps
-  SplineBased::Steps_t steps;
-  typedef SplineBased::Step Step;
-  steps.push_back (Step (0, -.1));
-  steps.push_back (Step (0, .1));
-  steps.push_back (Step (0.2, -.1));
-  steps.push_back (Step (0.4, .1));
-  steps.push_back (Step (0.6, -.1));
-  steps.push_back (Step (0.8, .1));
-  steps.push_back (Step (1.0, -.1));
-  steps.push_back (Step (1.2, .1));
-  steps.push_back (Step (1.4, -.1));
-  steps.push_back (Step (1.6, .1));
-  steps.push_back (Step (1.8, -.1));
-  steps.push_back (Step (2.0, .1));
-  steps.push_back (Step (2.2, -.1));
-  steps.push_back (Step (2.4, .1));
-  steps.push_back (Step (2.6, -.1));
-  steps.push_back (Step (2.8, .1));
-  steps.push_back (Step (3.0, -.1));
-  steps.push_back (Step (3.2, .1));
-  steps.push_back (Step (3.4, -.1));
-  steps.push_back (Step (3.4, .1));
+  // Define twenty foot prints
+  SplineBased::FootPrints_t footPrints;
+  typedef SplineBased::FootPrint FootPrint;
+  footPrints.push_back (FootPrint (0, -.1));
+  footPrints.push_back (FootPrint (0, .1));
+  footPrints.push_back (FootPrint (0.2, -.1));
+  footPrints.push_back (FootPrint (0.4, .1));
+  footPrints.push_back (FootPrint (0.6, -.1));
+  footPrints.push_back (FootPrint (0.8, .1));
+  footPrints.push_back (FootPrint (1.0, -.1));
+  footPrints.push_back (FootPrint (1.2, .1));
+  footPrints.push_back (FootPrint (1.4, -.1));
+  footPrints.push_back (FootPrint (1.6, .1));
+  footPrints.push_back (FootPrint (1.8, -.1));
+  footPrints.push_back (FootPrint (2.0, .1));
+  footPrints.push_back (FootPrint (2.2, -.1));
+  footPrints.push_back (FootPrint (2.4, .1));
+  footPrints.push_back (FootPrint (2.6, -.1));
+  footPrints.push_back (FootPrint (2.8, .1));
+  footPrints.push_back (FootPrint (3.0, -.1));
+  footPrints.push_back (FootPrint (3.2, .1));
+  footPrints.push_back (FootPrint (3.4, -.1));
+  footPrints.push_back (FootPrint (3.4, .1));
 
   // Define times
   Times_t times;
@@ -104,7 +105,7 @@ BOOST_AUTO_TEST_CASE (six_steps)
   value_type height = .8;
   SplineBasedPtr_t pg (SplineBased::create (height));
   pg->timeSequence (times);
-  pg->stepSequence (steps);
+  pg->footPrintSequence (footPrints);
 
   // define boundary conditions
   vector2_t position; position.setZero ();
@@ -114,6 +115,8 @@ BOOST_AUTO_TEST_CASE (six_steps)
   pg->setEndComState (position, velocity);
 
   CubicBSplinePtr_t comTrajectory = pg->solve ();
+  hppDout (info, "nb knots by interval: " << SplineBased::l);
+  hppDout (info, "cost = " << pg->cost ());
 
   std::cout << "set term wxt persist title 'zmp ref' 0 font ',5'" << std::endl
 	    << "set xlabel 'x'" << std::endl

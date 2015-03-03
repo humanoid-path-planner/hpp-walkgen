@@ -25,7 +25,7 @@
 namespace hpp {
   namespace walkgen {
     value_type SplineBased::gravity = 9.81;
-    size_type SplineBased::l = 1;
+    size_type SplineBased::l = 20;
 
     SplineBasedPtr_t SplineBased::create (const value_type& height)
     {
@@ -51,20 +51,20 @@ namespace hpp {
 
     }
 
-    void SplineBased::stepSequence (const Steps_t& steps)
+    void SplineBased::footPrintSequence (const FootPrints_t& footPrints)
     {
-      steps_ = steps;
+      footPrints_ = footPrints;
       boundaryConditions_.clear ();
-      std::size_t p = steps.size ();
+      std::size_t p = footPrints.size ();
       m_ = (2*p - 3)*l + 7;
       if (p < 3) {
 	throw std::runtime_error
-	  ("Step sequence should contain at least 3 steps");
+	  ("FootPrint sequence should contain at least 3 foot prints");
       }
       if (tau_.size () != 2*p-2) {
 	std::ostringstream oss;
 	oss << "size of time vector (" << tau_.size ()
-	    << ") does not fit " << "size of step vector (" << steps_.size ()
+	    << ") does not fit " << "size of step vector (" << footPrints_.size ()
 	    << ").";
 	throw std::runtime_error (oss.str ());
       }
@@ -92,8 +92,8 @@ namespace hpp {
       A0_.resize (0, m_-4);
       c0_.resize (0);
       c1_.resize (0);
-      zmpRefInit_ = .5 * (steps [0].position + steps [1].position);
-      zmpRefEnd_ = .5 * (steps [p-2].position + steps [p-1].position);
+      zmpRefInit_ = .5 * (footPrints [0].position + footPrints [1].position);
+      zmpRefEnd_ = .5 * (footPrints [p-2].position + footPrints [p-1].position);
     }
 
     void SplineBased::add (const BoundaryCondition& boundaryCondition)
@@ -188,7 +188,7 @@ namespace hpp {
 
     void SplineBased::defineProblem () const
     {
-      std::size_t p = steps_.size ();
+      std::size_t p = footPrints_.size ();
       const std::vector< value_type >& knots = comTrajectory_->knotVector ();
       // Fill H0_
       buildPolynomialVector ();
@@ -210,57 +210,57 @@ namespace hpp {
       for (size_type j=0; j < l; ++j) {
 	zmpRef0_.push_back (PiecewisePoly3 (knots [3+j], knots [4+j],
 					    zmpRefInit_ [0]*(l-j)/l +
-					    steps_ [1][0]*j/l,
+					    footPrints_ [1][0]*j/l,
 					    zmpRefInit_ [0]*(l-j-1)/l +
-					    steps_ [1][0]*(j+1)/l));
+					    footPrints_ [1][0]*(j+1)/l));
 	zmpRef1_.push_back (PiecewisePoly3 (knots [3+j], knots [4+j],
 					    zmpRefInit_ [1]*(l-j)/l +
-					    steps_ [1][1]*j/l,
+					    footPrints_ [1][1]*j/l,
 					    zmpRefInit_ [1]*(l-j-1)/l +
-					    steps_ [1][1]*(j+1)/l));
+					    footPrints_ [1][1]*(j+1)/l));
       }
       for (size_type j=0; j < l; ++j) {
 	zmpRef0_.push_back (PiecewisePoly3 (knots [3+l+j], knots [4+l+j],
-					    steps_ [1][0],
-					    steps_ [1][0]));
+					    footPrints_ [1][0],
+					    footPrints_ [1][0]));
 	zmpRef1_.push_back (PiecewisePoly3 (knots [3+l+j], knots [4+l+j],
-					    steps_ [1][1],
-					    steps_ [1][1]));
+					    footPrints_ [1][1],
+					    footPrints_ [1][1]));
       }
       for (size_type i=1; i < (size_type)p-2; ++i) {
 	for (size_type j=0; j < l; ++j) {
 	  zmpRef0_.push_back (PiecewisePoly3
 			      (knots [3+(2*i)*l+j], knots [4+(2*i)*l+j],
-			       steps_ [i][0]*(l-j)/l + steps_ [i+1][0]*j/l,
-			       steps_ [i][0]*(l-j-1)/l +
-			       steps_ [i+1][0]*(j+1)/l));
+			       footPrints_ [i][0]*(l-j)/l + footPrints_ [i+1][0]*j/l,
+			       footPrints_ [i][0]*(l-j-1)/l +
+			       footPrints_ [i+1][0]*(j+1)/l));
 	  zmpRef1_.push_back (PiecewisePoly3
 			      (knots [3+(2*i)*l+j], knots [4+(2*i)*l+j],
-			       steps_ [i][1]*(l-j)/l + steps_ [i+1][1]*j/l,
-			       steps_ [i][1]*(l-j-1)/l +
-			       steps_ [i+1][1]*(j+1)/l));
+			       footPrints_ [i][1]*(l-j)/l + footPrints_ [i+1][1]*j/l,
+			       footPrints_ [i][1]*(l-j-1)/l +
+			       footPrints_ [i+1][1]*(j+1)/l));
 	}
 	for (size_type j=0; j < l; ++j) {
 	  zmpRef0_.push_back (PiecewisePoly3
 			      (knots [3+(1+2*i)*l+j], knots [4+(1+2*i)*l+j],
-			       steps_ [i+1][0], steps_ [i+1][0]));
+			       footPrints_ [i+1][0], footPrints_ [i+1][0]));
 	  zmpRef1_.push_back (PiecewisePoly3
 			      (knots [3+(1+2*i)*l+j], knots [4+(1+2*i)*l+j],
-			       steps_ [i+1][1], steps_ [i+1][1]));
+			       footPrints_ [i+1][1], footPrints_ [i+1][1]));
 	}
       }
       for (size_type j=0; j < l; ++j) {
 	zmpRef0_.push_back (PiecewisePoly3 (knots [3+(2*p-4)*l+j],
 					    knots [4+(2*p-4)*l+j],
-					    steps_ [p-2][0]*(l-j)/l +
+					    footPrints_ [p-2][0]*(l-j)/l +
 					    zmpRefEnd_ [0]*j/l,
-					    steps_ [p-2][0]*(l-j-1)/l +
+					    footPrints_ [p-2][0]*(l-j-1)/l +
 					    zmpRefEnd_ [0]*(j+1)/l));
 	zmpRef1_.push_back (PiecewisePoly3 (knots [3+(2*p-4)*l+j],
 					    knots [4+(2*p-4)*l+j],
-					    steps_ [p-2][1]*(l-j)/l +
+					    footPrints_ [p-2][1]*(l-j)/l +
 					    zmpRefEnd_ [1]*j/l,
-					    steps_ [p-2][1]*(l-j-1)/l +
+					    footPrints_ [p-2][1]*(l-j-1)/l +
 					    zmpRefEnd_ [1]*(j+1)/l));
       }
       // Fill b0_ and b1_
