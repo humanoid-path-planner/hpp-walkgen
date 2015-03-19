@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE (six_footPrints)
   double t = 1.;
   double sst = .6;
   double dst = .1;
-  double bt = .3;
+  double bt = .6;
   times.push_back (t);
   t+=bt;
   times.push_back (t);
