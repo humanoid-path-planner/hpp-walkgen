@@ -48,16 +48,29 @@ BOOST_AUTO_TEST_CASE (six_footPrints)
 
   // Define times
   Times_t times;
-  times.push_back (1.);
-  times.push_back (1.3);
-  times.push_back (1.7);
-  times.push_back (1.8);
-  times.push_back (2.2);
-  times.push_back (2.3);
-  times.push_back (2.7);
-  times.push_back (2.8);
-  times.push_back (3.2);
-  times.push_back (3.4);
+  double t = 1.;
+  double sst = .6;
+  double dst = .1;
+  double bt = .3;
+  times.push_back (t);
+  t+=bt;
+  times.push_back (t);
+  t+=sst;
+  times.push_back (t);
+  t += dst;
+  times.push_back (t);
+  t+=sst;
+  times.push_back (t);
+  t += dst;
+  times.push_back (t);
+  t+=sst;
+  times.push_back (t);
+  t += dst;
+  times.push_back (t);
+  t+=sst;
+  times.push_back (t);
+  t+=bt;
+  times.push_back (t);
 
   value_type height = .8;
   SplineBasedPtr_t pg (SplineBased::create (height));
