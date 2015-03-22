@@ -39,8 +39,8 @@ using hpp::walkgen::vector_t;
 BOOST_AUTO_TEST_CASE (base_functions)
 {
     // Define six foot prints
-  SplineBased::FootPrints_t footPrints;
-  typedef SplineBased::FootPrint FootPrint;
+  hpp::walkgen::FootPrints_t footPrints;
+  typedef hpp::walkgen::FootPrint FootPrint;
   typedef SplineBased::ZmpTrajectory_t ZmpTrajectory_t;
   typedef SplineBased::ZmpTrajectories_t ZmpTrajectories_t;
 

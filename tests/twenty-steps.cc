@@ -38,8 +38,8 @@ using hpp::walkgen::vector_t;
 BOOST_AUTO_TEST_CASE (six_footPrints)
 {
   // Define twenty foot prints
-  SplineBased::FootPrints_t footPrints;
-  typedef SplineBased::FootPrint FootPrint;
+  hpp::walkgen::FootPrints_t footPrints;
+  typedef hpp::walkgen::FootPrint FootPrint;
   footPrints.push_back (FootPrint (0, -.1));
   footPrints.push_back (FootPrint (0, .1));
   footPrints.push_back (FootPrint (0.2, -.1));

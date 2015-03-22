@@ -22,8 +22,7 @@
 # include<Eigen/StdVector>
 
 # include <roboptim/trajectory/cubic-b-spline.hh>
-# include <hpp/walkgen/config.hh>
-# include <hpp/walkgen/fwd.hh>
+# include <hpp/walkgen/foot-print.hh>
 
 namespace hpp {
   namespace walkgen {
@@ -126,18 +125,6 @@ namespace hpp {
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
       static value_type gravity;
       static size_type l;
-      struct FootPrint {
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-	FootPrint (const value_type& abs, const value_type& ord) :
-	  position (abs, ord)
-	{
-	}
-	vector2_t position;
-	const value_type& operator[] (size_type index) const
-	{
-	  return position [index];
-	}
-      }; // struct FootPrint
       struct BoundaryCondition
       {
 	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -151,8 +138,6 @@ namespace hpp {
 	vector2_t position;
 	vector2_t velocity;
       }; // struct BoundaryCondition
-      typedef std::vector <FootPrint, Eigen::aligned_allocator <FootPrint> >
-	FootPrints_t;
       typedef std::vector <BoundaryCondition,
 			   Eigen::aligned_allocator <BoundaryCondition> >
 	BoundaryConditions_t;
