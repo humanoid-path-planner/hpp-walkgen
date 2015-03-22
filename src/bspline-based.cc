@@ -35,7 +35,8 @@ namespace hpp {
       return shPtr;
     }
 
-    SplineBased::SplineBased (const value_type& height) : height_ (height)
+    SplineBased::SplineBased (const value_type& height) :
+      height_ (height), defaultStepHeight_ (0)
     {
     }
 
@@ -92,8 +93,11 @@ namespace hpp {
       A0_.resize (0, m_-4);
       c0_.resize (0);
       c1_.resize (0);
+      // Initialize initial and final values of zmpRef.
       zmpRefInit_ = .5 * (footPrints [0].position + footPrints [1].position);
       zmpRefEnd_ = .5 * (footPrints [p-2].position + footPrints [p-1].position);
+      // Set step height to default value
+      stepHeights_ = StepHeights_t (p-2, defaultStepHeight_);
     }
 
     void SplineBased::add (const BoundaryCondition& boundaryCondition)

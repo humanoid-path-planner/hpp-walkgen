@@ -141,6 +141,7 @@ namespace hpp {
       typedef std::vector <BoundaryCondition,
 			   Eigen::aligned_allocator <BoundaryCondition> >
 	BoundaryConditions_t;
+      typedef std::vector <value_type> StepHeights_t;
       /// Create instance and return shared pointer
       ///
       /// \param height height of the center of mass
@@ -163,16 +164,45 @@ namespace hpp {
       ///
       /// \param footPrints a vector of foot prints
       /// \note number of foot prints should be set after time sequence and
-      ///  should fit
-      ///  length of time sequence. If \f$p\f$ is the number of foot prints, the
+      /// should fit
+      /// length of time sequence. If \f$p\f$ is the number of foot prints, the
       /// length of the time sequence should be equal to \f$2p-2\f$.
-      ///  See <a href="figures/walkgen.pdf"> this document</a> for details.
+      /// See <a href="figures/walkgen.pdf"> this document</a> for details.
+      /// \note Sequence of step heights is set to the default value.
       void footPrintSequence (const FootPrints_t& footPrints);
 
       /// get sequence of foot prints
       const FootPrints_t& footPrintSequence () const
       {
 	return footPrints_;
+      }
+
+      /// Set default step height
+      ///
+      void defaultStepHeight (const value_type& stepHeight)
+      {
+	defaultStepHeight_ = stepHeight;
+      }
+      /// Get default step height
+      ///
+      const value_type& defaultStepHeight () const
+      {
+	return defaultStepHeight_;
+      }
+
+      /// Set sequence of step heights
+      ///
+      /// \param stepHeights sequence of step heights
+      /// \note Sequence of foot heights should be set after the sequence of
+      /// foot prints.
+      void stepHeights (const StepHeights_t& stepHeights)
+      {
+	stepHeights_ = stepHeights;
+      }
+      /// Get sequence of step heights
+      const StepHeights_t& stepHeights () const
+      {
+	return stepHeights_;
       }
 
       /// Specify zmpref boundary conditions
@@ -251,6 +281,8 @@ namespace hpp {
       mutable size_type m_;
       Times_t tau_;
       FootPrints_t footPrints_;
+      StepHeights_t stepHeights_;
+      value_type defaultStepHeight_;
       BoundaryConditions_t boundaryConditions_;
       vector2_t zmpRefInit_;
       vector2_t zmpRefEnd_;
