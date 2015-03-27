@@ -39,12 +39,12 @@ BOOST_AUTO_TEST_CASE (six_footPrints)
   // Define six foot prints
   hpp::walkgen::FootPrints_t footPrints;
   typedef hpp::walkgen::FootPrint FootPrint;
-  footPrints.push_back (FootPrint (0, -.1));
-  footPrints.push_back (FootPrint (0, .1));
-  footPrints.push_back (FootPrint (0.2, -.1));
-  footPrints.push_back (FootPrint (0.4, .1));
-  footPrints.push_back (FootPrint (0.6, -.1));
-  footPrints.push_back (FootPrint (0.6, .1));
+  footPrints.push_back (FootPrint (0, -.1, 1, 0));
+  footPrints.push_back (FootPrint (0, .1, 1, 0));
+  footPrints.push_back (FootPrint (0.2, -.1, 1, 0));
+  footPrints.push_back (FootPrint (0.4, .1, 1, 0));
+  footPrints.push_back (FootPrint (0.6, -.1, 1, 0));
+  footPrints.push_back (FootPrint (0.6, .1, 1, 0));
 
   // Define times
   Times_t times;

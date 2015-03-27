@@ -20,7 +20,9 @@
 #include <sstream>
 #include <roboptim/trajectory/cubic-b-spline.hh>
 #include <hpp/util/debug.hh>
+#include <hpp/core/path-vector.hh>
 #include <hpp/walkgen/bspline-based.hh>
+#include <hpp/walkgen/foot-trajectory.hh>
 
 namespace hpp {
   namespace walkgen {
@@ -36,7 +38,9 @@ namespace hpp {
     }
 
     SplineBased::SplineBased (const value_type& height) :
-      height_ (height), defaultStepHeight_ (0)
+      height_ (height), defaultStepHeight_ (0),
+      leftFoot_ (createFootDevice ()),
+      rightFoot_ (createFootDevice ())
     {
     }
 
@@ -335,6 +339,9 @@ namespace hpp {
       }
       comTrajectory_->setParameters (parameters);
       hppDout (info, "cost = " << cost ());
+      // Compute trajectory of the feet
+      computeFootTrajectory ();
+
       return comTrajectory_;
     }
 
@@ -374,6 +381,77 @@ namespace hpp {
 	cost += integral (lower, upper, py1, py2);
       }
       return cost;
+    }
+
+    void SplineBased::computeFootTrajectory () const
+    {
+      leftFootTraj_ = PathVector::create (leftFoot_->configSize (),
+					  leftFoot_->numberDof ());
+      rightFootTraj_ = PathVector::create (rightFoot_->configSize (),
+					   rightFoot_->numberDof ());
+      // Determine which foot is moving first
+      vector2_t delta (footPrints_ [1].position - footPrints_ [0].position);
+      vector2_t u (footPrints_ [0].orientation);
+      PathVectorPtr_t firstFoot, secondFoot;
+      if (u [0]*delta [1] - u [1]*delta [0] > 0) {
+	//second foot print is at the left of first foot print
+	firstFoot = rightFootTraj_;
+	secondFoot = leftFootTraj_;
+      } else {
+	firstFoot = leftFootTraj_;
+	secondFoot = rightFootTraj_;
+      }
+      // First both feet remain static
+      firstFoot->appendPath (SupportFoot::create (footPrints_ [0], 0,
+						  tau_ [1] - tau_ [0]));
+      secondFoot->appendPath (SupportFoot::create (footPrints_ [1], 0,
+						   tau_ [1] - tau_ [0]));
+      // Loop
+      std::size_t i=0, j=0;
+      while (true) {
+	++j;
+	// Single support
+	firstFoot->appendPath (Step::create
+			       (footPrints_ [2*i], footPrints_ [2*i+2],
+				0., stepHeights_ [2*i],
+				tau_ [j+1] - tau_ [j]));
+	secondFoot->appendPath (SupportFoot::create
+				(footPrints_ [2*i+1], 0,
+				 tau_ [j+1] - tau_ [j]));
+	
+	++j;
+	if (2*i+2 == footPrints_.size ()) break;
+	// Double support
+	firstFoot->appendPath (SupportFoot::create
+			       (footPrints_ [2*i+2], 0,
+				tau_ [j+1] - tau_ [j]));
+	secondFoot->appendPath (SupportFoot::create
+				(footPrints_ [2*i+1], 0,
+				 tau_ [j+1] - tau_ [j]));
+	++i; ++j;
+	// Single support
+	firstFoot->appendPath (SupportFoot::create
+			       (footPrints_ [2*i], 0.,
+				tau_ [j+1] - tau_ [j]));
+	secondFoot->appendPath (Step::create
+				(footPrints_ [2*i-1], footPrints_ [2*i+1],
+				 0, stepHeights_ [2*i-1],
+				 tau_ [j+1] - tau_ [j]));
+	++j;
+	if (2*i+2 == footPrints_.size ()) break;
+	// Double support
+	firstFoot->appendPath (SupportFoot::create
+			       (footPrints_ [2*i], 0,
+				tau_ [j+1] - tau_ [j]));
+	secondFoot->appendPath (SupportFoot::create
+				(footPrints_ [2*i+1], 0,
+				 tau_ [j+1] - tau_ [j]));
+      }
+      // Last, both feet remain static
+      firstFoot->appendPath (SupportFoot::create (footPrints_ [2*i], 0,
+						  tau_ [j+1] - tau_ [j]));
+      secondFoot->appendPath (SupportFoot::create (footPrints_ [2*i+1], 0,
+						   tau_ [j+1] - tau_ [j]));
     }
 
   } // namespace walkgen

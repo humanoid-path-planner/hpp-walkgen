@@ -240,6 +240,23 @@ namespace hpp {
       /// Solve quadratic program and return resulting cubic B spline
       ///
       CubicBSplinePtr_t solve () const;
+
+      /// Get trajectory of left foot
+      ///
+      /// \precond Method solve should have been called first
+      const PathVectorPtr_t& leftFootTrajectory () const
+      {
+	return leftFootTraj_;
+      }
+
+      /// Get trajectory of right foot
+      ///
+      /// \precond Method solve should have been called first
+      const PathVectorPtr_t& rightFootTrajectory () const
+      {
+	return rightFootTraj_;
+      }
+
       /// Getter to representation of zmp ref abscissa
       const ZmpTrajectory_t& zmpRefx () const
       {
@@ -273,6 +290,8 @@ namespace hpp {
       /// initialization
       /// Store weak pointer to instance
       void init (const SplineBasedWkPtr_t& self);
+      /// Compute trajectory of the feet
+      void computeFootTrajectory () const;
     private:
       void defineProblem () const;
       void buildPolynomialVector () const;
@@ -286,6 +305,8 @@ namespace hpp {
       BoundaryConditions_t boundaryConditions_;
       vector2_t zmpRefInit_;
       vector2_t zmpRefEnd_;
+      model::DevicePtr_t leftFoot_;
+      model::DevicePtr_t rightFoot_;
       mutable CubicBSplinePtr_t comTrajectory_;
       mutable matrix_t H0_;
       mutable vector_t b0_, b1_;
@@ -294,6 +315,8 @@ namespace hpp {
       mutable ZmpTrajectories_t Z_;
       mutable ZmpTrajectory_t zmpRef0_;
       mutable ZmpTrajectory_t zmpRef1_;
+      mutable PathVectorPtr_t leftFootTraj_;
+      mutable PathVectorPtr_t rightFootTraj_;
     }; // class SplineBased
   } // namespace walkgen
 } // namespace hpp

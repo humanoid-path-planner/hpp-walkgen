@@ -39,9 +39,11 @@ ENDIF()
 
 SET(${PROJECT_NAME}_HEADERS
   include/hpp/walkgen/bspline-based.hh
+  include/hpp/walkgen/foot-print.hh
+  include/hpp/walkgen/foot-trajectory.hh
 )
 
-ADD_REQUIRED_DEPENDENCY(hpp-util >= 3)
+ADD_REQUIRED_DEPENDENCY(hpp-core >= 3)
 ADD_REQUIRED_DEPENDENCY(roboptim-trajectory >= 1)
 
 PKG_CONFIG_APPEND_LIBS("hpp_walkgen")

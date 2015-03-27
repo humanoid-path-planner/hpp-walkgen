@@ -57,7 +57,7 @@ B_{i,i+3} (t) &=& \frac{(t_{i+4} - t)^3}{(t_{i+4} - t_{i+1})(t_{i+4} - t_{i+2})(
 and for any interval $I$ of $\real$, $\mathbb{I}_{I}$ is the function equal to
 1 over $I$ and to $0$ outside $I$.
 
-\section {Walk generator}
+\section {Trajectory of the center of mass}
 
 \subsection {Input}
 
@@ -283,4 +283,19 @@ If $t = \tau_{2p-3} = t_{m-4}$
   A_0 = A_1 &=& \left(\begin{array}{cccccc}0&\cdots&0&B_{m-7,m-4}(t_{m-4})&B_{m-6,m-4}(t_{m-4})&B_{m-5,m-4}(t_{m-4})\\
     0&\cdots&0&\dot{B}_{m-7,m-4}(t_{m-4})&\dot{B}_{m-6,m-4}(t_{m-4})&\dot{B}_{m-5,m-4}(t_{m-4})\\\end{array}\right) \\
 \end{eqnarray*}
+
+\section {Trajectory of the feet}
+
+We define the trajectories of the feet as piece-wise polynomial curves of degree
+3.
+
+\subsection {Cubic interpolation}
+
+Let us recall that for any polynomial function $P$ of degree 3 and any $t\in\real$, we have
+\begin{eqnarray*}
+P (t) &=& \ \ \left(2P(0)-2P(1)+\dot{P}(0)+\dot{P}(1)\right)\ t^3\\
+&& +\left(-3P(0)+3P(1)-2\dot{P}(0)-\dot{P}(1)\right)\ t^2\\
+&& +\ \dot{P}(0)\ t\ + \ P(0)
+\end{eqnarray*}
+
 \end{document}

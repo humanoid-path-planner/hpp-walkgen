@@ -44,12 +44,12 @@ BOOST_AUTO_TEST_CASE (base_functions)
   typedef SplineBased::ZmpTrajectory_t ZmpTrajectory_t;
   typedef SplineBased::ZmpTrajectories_t ZmpTrajectories_t;
 
-  footPrints.push_back (FootPrint (0, -.1));
-  footPrints.push_back (FootPrint (0, .1));
-  footPrints.push_back (FootPrint (0.2, -.1));
-  footPrints.push_back (FootPrint (0.4, .1));
-  footPrints.push_back (FootPrint (0.6, -.1));
-  footPrints.push_back (FootPrint (0.6, .1));
+  footPrints.push_back (FootPrint (0, -.1, 1., 0.));
+  footPrints.push_back (FootPrint (0, .1, 1., 0.));
+  footPrints.push_back (FootPrint (0.2, -.1, 1., 0.));
+  footPrints.push_back (FootPrint (0.4, .1, 1., 0.));
+  footPrints.push_back (FootPrint (0.6, -.1, 1., 0.));
+  footPrints.push_back (FootPrint (0.6, .1, 1., 0.));
 
   // Define times
   Times_t times;

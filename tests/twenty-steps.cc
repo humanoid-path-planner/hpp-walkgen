@@ -17,6 +17,7 @@
 // <http://www.gnu.org/licenses/>.
 
 #include <hpp/util/debug.hh>
+#include <hpp/core/path-vector.hh>
 #include <hpp/walkgen/bspline-based.hh>
 
 #define BOOST_TEST_MODULE six_footPrints
@@ -40,30 +41,31 @@ BOOST_AUTO_TEST_CASE (six_footPrints)
   // Define twenty foot prints
   hpp::walkgen::FootPrints_t footPrints;
   typedef hpp::walkgen::FootPrint FootPrint;
-  footPrints.push_back (FootPrint (0, -.1));
-  footPrints.push_back (FootPrint (0, .1));
-  footPrints.push_back (FootPrint (0.2, -.1));
-  footPrints.push_back (FootPrint (0.4, .1));
-  footPrints.push_back (FootPrint (0.6, -.1));
-  footPrints.push_back (FootPrint (0.8, .1));
-  footPrints.push_back (FootPrint (1.0, -.1));
-  footPrints.push_back (FootPrint (1.2, .1));
-  footPrints.push_back (FootPrint (1.4, -.1));
-  footPrints.push_back (FootPrint (1.6, .1));
-  footPrints.push_back (FootPrint (1.8, -.1));
-  footPrints.push_back (FootPrint (2.0, .1));
-  footPrints.push_back (FootPrint (2.2, -.1));
-  footPrints.push_back (FootPrint (2.4, .1));
-  footPrints.push_back (FootPrint (2.6, -.1));
-  footPrints.push_back (FootPrint (2.8, .1));
-  footPrints.push_back (FootPrint (3.0, -.1));
-  footPrints.push_back (FootPrint (3.2, .1));
-  footPrints.push_back (FootPrint (3.4, -.1));
-  footPrints.push_back (FootPrint (3.4, .1));
+  value_type ylf = .1, yrf = -.1;
+  footPrints.push_back (FootPrint (0, yrf, 1, 0));
+  footPrints.push_back (FootPrint (0, ylf, 1, 0));
+  footPrints.push_back (FootPrint (0.2, yrf, 1, 0));
+  footPrints.push_back (FootPrint (0.4, ylf, 1, 0));
+  footPrints.push_back (FootPrint (0.6, yrf, 1, 0));
+  footPrints.push_back (FootPrint (0.8, ylf, 1, 0));
+  footPrints.push_back (FootPrint (1.0, yrf, 1, 0));
+  footPrints.push_back (FootPrint (1.2, ylf, 1, 0));
+  footPrints.push_back (FootPrint (1.4, yrf, 1, 0));
+  footPrints.push_back (FootPrint (1.6, ylf, 1, 0));
+  footPrints.push_back (FootPrint (1.8, yrf, 1, 0));
+  footPrints.push_back (FootPrint (2.0, ylf, 1, 0));
+  footPrints.push_back (FootPrint (2.2, yrf, 1, 0));
+  footPrints.push_back (FootPrint (2.4, ylf, 1, 0));
+  footPrints.push_back (FootPrint (2.6, yrf, 1, 0));
+  footPrints.push_back (FootPrint (2.8, ylf, 1, 0));
+  footPrints.push_back (FootPrint (3.0, yrf, 1, 0));
+  footPrints.push_back (FootPrint (3.2, ylf, 1, 0));
+  footPrints.push_back (FootPrint (3.4, yrf, 1, 0));
+  footPrints.push_back (FootPrint (3.4, ylf, 1, 0));
 
   // Define times
   Times_t times;
-  double t = 1.;
+  double t = 0.;
   double sst = .6;
   double dst = .1;
   double bt = .6;
@@ -156,6 +158,8 @@ BOOST_AUTO_TEST_CASE (six_footPrints)
   pg->setEndComState (position, velocity);
 
   CubicBSplinePtr_t comTrajectory = pg->solve ();
+  hpp::core::PathPtr_t lf = pg->leftFootTrajectory ();
+  hpp::core::PathPtr_t rf = pg->rightFootTrajectory ();
   hppDout (info, "nb knots by interval: " << SplineBased::l);
   hppDout (info, "cost = " << pg->cost ());
 
@@ -286,6 +290,21 @@ BOOST_AUTO_TEST_CASE (six_footPrints)
     vector_t com = (*comTrajectory) (t);
     vector_t zmp = com - un_sur_omega_2 * comTrajectory->derivative (t, 2);
     std::cout << t << "\t" << zmp [0] << "\t" << zmp [1] << std::endl;
+  }
+  std::cout << "e" << std::endl;
+
+  // Feet
+  std::cout << "set term wxt persist title 'left foot' 8 font ',5'"
+	    << std::endl
+	    << "set xlabel 't'" << std::endl
+	    << "set ylabel 'm'" << std::endl;
+  std::cout << "plot '-' using 1:2 title 'x left foot' with lines, '-' using 1:3 title 'y left foot' with lines\n";
+  for (double t = lf->timeRange ().first;
+       t <= lf->timeRange ().second; t+=dt) {
+    vector_t ql = (*lf) (t);
+    vector_t qr = (*rf) (t);
+    std::cout << t << "\t" << ql [0] << "\t" << ql [1] << "\t"
+	      << qr [0] << "\t" << qr [1] << std::endl;
   }
   std::cout << "e" << std::endl;
 }

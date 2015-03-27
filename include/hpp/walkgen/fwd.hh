@@ -21,7 +21,7 @@
 
 # include <vector>
 # include <Eigen/Core>
-# include <hpp/util/pointer.hh>
+# include <hpp/core/fwd.hh>
 # include <roboptim/trajectory/fwd.hh>
 
 namespace roboptim {
@@ -35,6 +35,10 @@ namespace hpp {
   namespace walkgen {
     HPP_PREDEF_CLASS (SplineBased);
     typedef boost::shared_ptr <SplineBased> SplineBasedPtr_t;
+    HPP_PREDEF_CLASS (Step);
+    typedef boost::shared_ptr <Step> StepPtr_t;
+    HPP_PREDEF_CLASS (SupportFoot);
+    typedef boost::shared_ptr <SupportFoot> SupportFootPtr_t;
 
     typedef double value_type;
     typedef Eigen::Matrix <value_type, Eigen::Dynamic, 1> vector_t;
@@ -42,7 +46,16 @@ namespace hpp {
     typedef matrix_t::Index size_type;
     typedef std::vector <value_type> Times_t;
     typedef Eigen::Matrix <value_type, 2, 1> vector2_t;
+    typedef Eigen::Matrix <value_type, 1, 1> vector1_t;
 
+    // from hpp-model
+    typedef model::Transform3f Transform3f;
+    // from hpp-core
+    typedef core::Path Path;
+    typedef core::PathPtr_t PathPtr_t;
+    typedef core::PathVectorPtr_t PathVectorPtr_t;
+    typedef core::PathVector PathVector;
+    typedef core::ConfigurationOut_t ConfigurationOut_t;
   } // namespace walkgen
 } // namespace hpp
 

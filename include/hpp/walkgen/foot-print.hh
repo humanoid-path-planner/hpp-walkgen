@@ -27,11 +27,18 @@ namespace hpp {
     /// Position of a foot on the (horizontal) ground
     struct FootPrint {
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-      FootPrint (const value_type& abs, const value_type& ord) :
-	position (abs, ord)
+      /// Constructor
+      ///
+      /// \param abs, ord position of the foot center in the horizontal plane,
+      /// \param cosYaw, sinYaw orientation of the foot specified by cosine and
+      ///        sine
+      FootPrint (const value_type& abs, const value_type& ord,
+		 const value_type& cosYaw, const value_type& sinYaw) :
+	position (abs, ord), orientation (cosYaw, sinYaw)
       {
       }
       vector2_t position;
+      vector2_t orientation;
       const value_type& operator[] (size_type index) const
       {
 	return position [index];
