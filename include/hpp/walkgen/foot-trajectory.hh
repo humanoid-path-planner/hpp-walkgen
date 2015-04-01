@@ -42,6 +42,7 @@ namespace hpp {
       {
 	return StepPtr_t (new Step (*this));
       }
+      virtual ~Step () throw () {}
     protected:
       Step (const FootPrint& start, const FootPrint& end,
 	    const value_type& stepLow, const value_type& stepHigh,
@@ -52,8 +53,19 @@ namespace hpp {
 	v0_ (step.v0_), v1_ (step.v1_), v2_ (step.v2_), v3_ (step.v3_),
 	initialOrientation_ (step.initialOrientation_), angle_ (step.angle_),
 	omega0_ (step.omega0_), omega1_ (step.omega1_), omega2_ (step.omega2_),
-	omega3_ (step.omega3_)
+	omega3_ (step.omega3_), initial_ (step.initial_), final_ (step.final_)
+
       {
+      }
+
+      virtual Configuration_t initial () const
+      {
+	return initial_;
+      }
+
+      virtual Configuration_t end () const
+      {
+	return final_;
       }
 
       virtual bool impl_compute (ConfigurationOut_t configuration,
@@ -86,6 +98,10 @@ namespace hpp {
       value_type angle_;
       /// Coefficients of the polynomial orientation
       value_type omega0_, omega1_, omega2_, omega3_;
+      /// initial configuration
+      Configuration_t initial_;
+      /// final configuration
+      Configuration_t final_;      
     }; // class Step
 
     /// Static trajectory of a support foot
@@ -104,14 +120,26 @@ namespace hpp {
       {
 	return SupportFootPtr_t (new SupportFoot (*this));
       }
+      virtual ~SupportFoot () throw () {}
     protected:
       SupportFoot (const FootPrint& position, const value_type& footHeight,
 		   const value_type& duration);
       SupportFoot (const SupportFoot& sp) : Path (sp),
 					    h0_ (sp.h0_), v0_ (sp.v0_),
-					    orientation_ (sp.orientation_)
+					    orientation_ (sp.orientation_),
+					    configuration_ (sp.configuration_)
       {
       }
+      virtual Configuration_t initial () const
+      {
+	return configuration_;
+      }
+
+      virtual Configuration_t end () const
+      {
+	return configuration_;
+      }
+
       virtual bool impl_compute (ConfigurationOut_t configuration,
 				 value_type t) const;
       virtual std::ostream& print (std::ostream &os) const
@@ -128,6 +156,8 @@ namespace hpp {
       value_type v0_;
       /// Store initial orientation of the foot
       vector2_t orientation_;
+      /// Configuration of the foot
+      Configuration_t configuration_;
     }; // class SupportFoot
 
   } // namespace walkgen

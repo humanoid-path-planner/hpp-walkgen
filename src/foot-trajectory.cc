@@ -64,9 +64,16 @@ namespace hpp {
       v0_ (stepLow), v1_ (0), v2_ (3*(stepHigh - stepLow)),
       v3_ (2*(stepLow - stepHigh)), initialOrientation_ (start.orientation),
       angle_ (computeAngle (start, end)),
-      omega0_ (0.), omega1_ (0.), omega2_ (3*angle_), omega3_ (-2*angle_)
+      omega0_ (0.), omega1_ (0.), omega2_ (3*angle_), omega3_ (-2*angle_),
+      initial_ (footConfigSize), final_ (footConfigSize)
     {
       h1_.setZero ();
+      initial_.segment <2> (0) = start.position;
+      initial_.segment <2> (2) = start.orientation;
+      initial_ [4] = stepLow;
+      final_.segment <2> (0) = end.position;
+      final_.segment <2> (2) = end.orientation;
+      final_ [4] = stepHigh;
     }
 
     bool Step::impl_compute (ConfigurationOut_t configuration,
@@ -104,8 +111,11 @@ namespace hpp {
 			      const value_type& duration) :
       Path (std::make_pair (0, duration), footConfigSize, footNumberDof),
       h0_ (position.position), v0_ (footHeight),
-      orientation_ (position.orientation)
+      orientation_ (position.orientation), configuration_ (footConfigSize)
     {
+      configuration_.segment <2> (0) = position.position;
+      configuration_.segment <2> (2) = position.orientation;
+      configuration_ [4] = footHeight;
     }
 
     bool SupportFoot::impl_compute (ConfigurationOut_t configuration,
