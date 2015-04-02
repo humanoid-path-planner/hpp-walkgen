@@ -41,6 +41,7 @@ SET(${PROJECT_NAME}_HEADERS
   include/hpp/walkgen/bspline-based.hh
   include/hpp/walkgen/foot-print.hh
   include/hpp/walkgen/foot-trajectory.hh
+  include/hpp/walkgen/fwd.hh
 )
 
 ADD_REQUIRED_DEPENDENCY(hpp-core >= 3)
