@@ -39,6 +39,7 @@ namespace hpp {
     typedef boost::shared_ptr <Step> StepPtr_t;
     HPP_PREDEF_CLASS (SupportFoot);
     typedef boost::shared_ptr <SupportFoot> SupportFootPtr_t;
+    class FootPrint;
 
     typedef double value_type;
     typedef Eigen::Matrix <value_type, Eigen::Dynamic, 1> vector_t;
