@@ -24,15 +24,10 @@
 # include <hpp/core/fwd.hh>
 # include <roboptim/trajectory/fwd.hh>
 
-namespace roboptim {
-  namespace trajectory {
-    HPP_PREDEF_CLASS (CubicBSpline);
-    typedef boost::shared_ptr <CubicBSpline> CubicBSplinePtr_t;
-  } // namespace trajectory
-} // namespace roboptim
-
 namespace hpp {
   namespace walkgen {
+    typedef roboptim::trajectory::CubicBSpline CubicBSpline;
+    typedef boost::shared_ptr <CubicBSpline> CubicBSplinePtr_t;
     HPP_PREDEF_CLASS (SplineBased);
     typedef boost::shared_ptr <SplineBased> SplineBasedPtr_t;
     HPP_PREDEF_CLASS (Step);
