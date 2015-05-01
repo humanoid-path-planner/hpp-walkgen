@@ -44,6 +44,7 @@ SET(${PROJECT_NAME}_HEADERS
   include/hpp/walkgen/fwd.hh
 )
 
+ADD_REQUIRED_DEPENDENCY(hpp-util >= 3)
 ADD_REQUIRED_DEPENDENCY(hpp-core >= 3)
 ADD_REQUIRED_DEPENDENCY(roboptim-trajectory >= 1)
 
