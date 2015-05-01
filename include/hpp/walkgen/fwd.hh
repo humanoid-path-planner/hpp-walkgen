@@ -53,6 +53,7 @@ namespace hpp {
     typedef core::PathVector PathVector;
     typedef core::ConfigurationOut_t ConfigurationOut_t;
     typedef core::Configuration_t Configuration_t;
+    typedef core::ConstraintSetPtr_t ConstraintSetPtr_t;
   } // namespace walkgen
 } // namespace hpp
 

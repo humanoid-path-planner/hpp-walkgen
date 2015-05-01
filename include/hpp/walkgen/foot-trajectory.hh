@@ -38,10 +38,17 @@ namespace hpp {
 			       const value_type& stepLow,
 			       const value_type& stepHigh,
 			       const value_type& duration);
-      virtual PathPtr_t	copy () const
+      virtual PathPtr_t copy () const
       {
 	return StepPtr_t (new Step (*this));
       }
+
+      virtual PathPtr_t copy (const ConstraintSetPtr_t& constraints) const
+      {
+	throw std::logic_error ("Providing constraints to foot trajectory is "
+				"not supported.");
+      }
+
       virtual ~Step () throw () {}
     protected:
       Step (const FootPrint& start, const FootPrint& end,
@@ -116,9 +123,15 @@ namespace hpp {
 				      const value_type& footHeight,
 				      const value_type& duration);
 
-      virtual PathPtr_t	copy () const
+      virtual PathPtr_t copy () const
       {
 	return SupportFootPtr_t (new SupportFoot (*this));
+      }
+
+      virtual PathPtr_t copy (const ConstraintSetPtr_t& constraints) const
+      {
+	throw std::logic_error ("Providing constraints to foot trajectory is "
+				"not supported.");
       }
       virtual ~SupportFoot () throw () {}
     protected:
