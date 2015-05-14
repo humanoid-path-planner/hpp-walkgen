@@ -69,7 +69,8 @@ namespace hpp {
       if (tau_.size () != 2*p-2) {
 	std::ostringstream oss;
 	oss << "size of time vector (" << tau_.size ()
-	    << ") does not fit " << "size of step vector (" << footPrints_.size ()
+	    << ") does not fit " << "size of step vector ("
+	    << footPrints_.size ()
 	    << ").";
 	throw std::runtime_error (oss.str ());
       }
@@ -79,8 +80,8 @@ namespace hpp {
       knots [0] = tau0 - 3.; knots [1] = tau0 - 2.;  knots [2] = tau0 - 1.;
       for (size_type k=0; k < (size_type)(2*p-3); ++k) {
 	for (size_type j=0; j < l; ++j) {
-	  knots [3+k*l+j] = ((double)(l-j))/l * tau_ [k] +
-	    ((double)j)/l * tau_ [k+1];
+	  knots [3+k*l+j] = ((value_type)(l-j))/(value_type)l * tau_ [k] +
+	    ((value_type)j)/(value_type)l * tau_ [k+1];
 	}
       }
       knots [m_-4] = tau_ [2*p-3];
@@ -203,7 +204,7 @@ namespace hpp {
       H0_.setZero ();
       for (size_type i = 0; i < m_ - 4; ++i) {
 	for (size_type k = 0; k < m_ - 4 && i + k < m_ - 4; ++k) {
-	  for (size_type j=std::max(0, (size_type)(3-i-k));
+	  for (size_type j=std::max((size_type)0, (size_type)(3-i-k));
 	       j < 4 - k && i + k + j < m_ - 4; ++j) {
 	    H0_ (i, i+k) += integral (knots [i+k+j], knots [i+k+j+1],
 				      Z_ [i][k+j], Z_ [i+k][j]);
@@ -216,16 +217,18 @@ namespace hpp {
       zmpRef0_.clear ();
       zmpRef1_.clear ();
       for (size_type j=0; j < l; ++j) {
-	zmpRef0_.push_back (PiecewisePoly3 (knots [3+j], knots [4+j],
-					    zmpRefInit_ [0]*(l-j)/l +
-					    footPrints_ [1][0]*j/l,
-					    zmpRefInit_ [0]*(l-j-1)/l +
-					    footPrints_ [1][0]*(j+1)/l));
-	zmpRef1_.push_back (PiecewisePoly3 (knots [3+j], knots [4+j],
-					    zmpRefInit_ [1]*(l-j)/l +
-					    footPrints_ [1][1]*j/l,
-					    zmpRefInit_ [1]*(l-j-1)/l +
-					    footPrints_ [1][1]*(j+1)/l));
+	zmpRef0_.push_back
+	  (PiecewisePoly3 (knots [3+j], knots [4+j],
+			   zmpRefInit_ [0]*(value_type)(l-j)/(value_type)l +
+			   footPrints_ [1][0]*(value_type)j/(value_type)l,
+			   zmpRefInit_ [0]*(value_type)(l-j-1)/(value_type)l +
+			   footPrints_ [1][0]*(value_type)(j+1)/(value_type)l));
+	zmpRef1_.push_back
+	  (PiecewisePoly3 (knots [3+j], knots [4+j],
+			   zmpRefInit_ [1]*(value_type)(l-j)/(value_type)l +
+			   footPrints_ [1][1]*(value_type)j/(value_type)l,
+			   zmpRefInit_ [1]*(value_type)(l-j-1)/(value_type)l +
+			   footPrints_ [1][1]*(value_type)(j+1)/(value_type)l));
       }
       for (size_type j=0; j < l; ++j) {
 	zmpRef0_.push_back (PiecewisePoly3 (knots [3+l+j], knots [4+l+j],
@@ -237,16 +240,20 @@ namespace hpp {
       }
       for (size_type i=1; i < (size_type)p-2; ++i) {
 	for (size_type j=0; j < l; ++j) {
-	  zmpRef0_.push_back (PiecewisePoly3
-			      (knots [3+(2*i)*l+j], knots [4+(2*i)*l+j],
-			       footPrints_ [i][0]*(l-j)/l + footPrints_ [i+1][0]*j/l,
-			       footPrints_ [i][0]*(l-j-1)/l +
-			       footPrints_ [i+1][0]*(j+1)/l));
-	  zmpRef1_.push_back (PiecewisePoly3
-			      (knots [3+(2*i)*l+j], knots [4+(2*i)*l+j],
-			       footPrints_ [i][1]*(l-j)/l + footPrints_ [i+1][1]*j/l,
-			       footPrints_ [i][1]*(l-j-1)/l +
-			       footPrints_ [i+1][1]*(j+1)/l));
+	  zmpRef0_.push_back
+	    (PiecewisePoly3
+	     (knots [3+(2*i)*l+j], knots [4+(2*i)*l+j],
+	      footPrints_ [i][0]*(value_type)(l-j)/(value_type)l +
+	      footPrints_ [i+1][0]*(value_type)j/(value_type)l,
+	      footPrints_ [i][0]*(value_type)(l-j-1)/(value_type)l +
+	      footPrints_ [i+1][0]*(value_type)(j+1)/(value_type)l));
+	  zmpRef1_.push_back
+	    (PiecewisePoly3
+	     (knots [3+(2*i)*l+j], knots [4+(2*i)*l+j],
+	      footPrints_ [i][1]*(value_type)(l-j)/(value_type)l +
+	      footPrints_ [i+1][1]*(value_type)j/(value_type)l,
+	      footPrints_ [i][1]*(value_type)(l-j-1)/(value_type)l +
+	      footPrints_ [i+1][1]*(value_type)(j+1)/(value_type)l));
 	}
 	for (size_type j=0; j < l; ++j) {
 	  zmpRef0_.push_back (PiecewisePoly3
@@ -258,23 +265,26 @@ namespace hpp {
 	}
       }
       for (size_type j=0; j < l; ++j) {
-	zmpRef0_.push_back (PiecewisePoly3 (knots [3+(2*p-4)*l+j],
-					    knots [4+(2*p-4)*l+j],
-					    footPrints_ [p-2][0]*(l-j)/l +
-					    zmpRefEnd_ [0]*j/l,
-					    footPrints_ [p-2][0]*(l-j-1)/l +
-					    zmpRefEnd_ [0]*(j+1)/l));
-	zmpRef1_.push_back (PiecewisePoly3 (knots [3+(2*p-4)*l+j],
-					    knots [4+(2*p-4)*l+j],
-					    footPrints_ [p-2][1]*(l-j)/l +
-					    zmpRefEnd_ [1]*j/l,
-					    footPrints_ [p-2][1]*(l-j-1)/l +
-					    zmpRefEnd_ [1]*(j+1)/l));
+	zmpRef0_.push_back
+	  (PiecewisePoly3
+	   (knots [3+(2*p-4)*l+j], knots [4+(2*p-4)*l+j],
+	    footPrints_ [p-2][0]*(value_type)(l-j)/(value_type)l +
+	    zmpRefEnd_ [0]*(value_type)j/(value_type)l,
+	    footPrints_ [p-2][0]*(value_type)(l-j-1)/(value_type)l +
+	    zmpRefEnd_ [0]*(value_type)(j+1)/(value_type)l));
+	zmpRef1_.push_back
+	  (PiecewisePoly3
+	   (knots [3+(2*p-4)*l+j], knots [4+(2*p-4)*l+j],
+	    footPrints_ [p-2][1]*(value_type)(l-j)/(value_type)l +
+	    zmpRefEnd_ [1]*(value_type)j/(value_type)l,
+	    footPrints_ [p-2][1]*(value_type)(l-j-1)/(value_type)l +
+	    zmpRefEnd_ [1]*(value_type)(j+1)/(value_type)l));
       }
       // Fill b0_ and b1_
       b0_.setZero (); b1_.setZero ();
       for (size_type i = 0; i < m_ - 4; ++i) {
-	for (size_type j = std::max (0, 3-i); j < 4 && j < m_-4-i; ++j) {
+	for (size_type j = std::max ((size_type)0, 3-i); j < 4 &&
+	       j < m_-4-i; ++j) {
 	  b0_ [i]  += integral (knots [i+j], knots [i+j+1],
 				Z_ [i][j], zmpRef0_ [i+j-3]);
 	  b1_ [i]  += integral (knots [i+j], knots [i+j+1],
@@ -361,7 +371,8 @@ namespace hpp {
 	value_type upper = zmpRef0_ [i].upper;
 	vector7_t values;
 	for (std::size_t j = 0; j < 7; ++j) {
-	  value_type t = (6-j)/6. * lower + j/6. * upper;
+	  value_type t = (value_type)(6-j)/6. * lower +
+	    (value_type)j/6. * upper;
 	  vector_t zmp = (*comTrajectory_) (t) -
 	    un_sur_omega_2 * comTrajectory_->derivative (t, 2);
 	  values [j] = zmp [0] - zmpRef0_ [i][j];
@@ -371,7 +382,8 @@ namespace hpp {
 	cost += integral (lower, upper, px1, px2);
 
 	for (std::size_t j = 0; j < 7; ++j) {
-	  value_type t = (6-j)/6. * lower + j/6. * upper;
+	  value_type t = (value_type)(6-j)/6. * lower +
+	    (value_type)j/6. * upper;
 	  vector_t zmp = (*comTrajectory_) (t) -
 	    un_sur_omega_2 * comTrajectory_->derivative (t, 2);
 	  values [j] = zmp [1] - zmpRef1_ [i][j];

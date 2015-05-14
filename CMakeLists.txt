@@ -30,6 +30,7 @@ SET(PROJECT_DESCRIPTION
 SET(PROJECT_URL "")
 
 SETUP_PROJECT()
+SEARCH_FOR_BOOST()
 
 # Activate hpp-util logging if requested
 SET (HPP_DEBUG FALSE CACHE BOOL "trigger hpp-util debug output")

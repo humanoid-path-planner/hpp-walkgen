@@ -43,7 +43,7 @@ namespace hpp {
 	return StepPtr_t (new Step (*this));
       }
 
-      virtual PathPtr_t copy (const ConstraintSetPtr_t& constraints) const
+      virtual PathPtr_t copy (const ConstraintSetPtr_t&) const
       {
 	throw std::logic_error ("Providing constraints to foot trajectory is "
 				"not supported.");
@@ -128,7 +128,7 @@ namespace hpp {
 	return SupportFootPtr_t (new SupportFoot (*this));
       }
 
-      virtual PathPtr_t copy (const ConstraintSetPtr_t& constraints) const
+      virtual PathPtr_t copy (const ConstraintSetPtr_t&) const
       {
 	throw std::logic_error ("Providing constraints to foot trajectory is "
 				"not supported.");
