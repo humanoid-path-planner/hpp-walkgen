@@ -22,6 +22,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 SET(CXX_DISABLE_WERROR TRUE)
 INCLUDE(cmake/base.cmake)
 INCLUDE(cmake/boost.cmake)
+INCLUDE(cmake/eigen.cmake)
 
 SET(PROJECT_NAME hpp-walkgen)
 SET(PROJECT_DESCRIPTION
@@ -45,9 +46,12 @@ SET(${PROJECT_NAME}_HEADERS
   include/hpp/walkgen/fwd.hh
 )
 
+ADD_REQUIRED_DEPENDENCY(eigen3 >= 3.2)
 ADD_REQUIRED_DEPENDENCY(hpp-util >= 3)
 ADD_REQUIRED_DEPENDENCY(hpp-core >= 3)
 ADD_REQUIRED_DEPENDENCY(roboptim-trajectory >= 1)
+
+SEARCH_FOR_BOOST ()
 
 PKG_CONFIG_APPEND_LIBS("hpp-walkgen")
 

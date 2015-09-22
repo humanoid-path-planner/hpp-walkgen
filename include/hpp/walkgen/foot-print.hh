@@ -19,6 +19,8 @@
 #ifndef HPP_WALKGEN_FOOT_PRINT_HH
 # define HPP_WALKGEN_FOOT_PRINT_HH
 
+# include <Eigen/StdVector>
+
 # include <hpp/walkgen/config.hh>
 # include <hpp/walkgen/fwd.hh>
 
