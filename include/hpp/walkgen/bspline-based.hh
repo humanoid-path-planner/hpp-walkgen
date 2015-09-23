@@ -255,6 +255,16 @@ namespace hpp {
 	return rightFootTraj_;
       }
 
+      model::DevicePtr_t leftFoot () const
+      {
+        return leftFoot_;
+      }
+
+      model::DevicePtr_t rightFoot () const
+      {
+        return rightFoot_;
+      }
+
       /// Getter to representation of zmp ref abscissa
       const ZmpTrajectory_t& zmpRefx () const
       {
