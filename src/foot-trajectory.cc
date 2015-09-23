@@ -34,6 +34,7 @@ namespace hpp {
       model::JointPtr_t root = new model::JointTranslation <3> (position);
       device->rootJoint (root);
       model::JointPtr_t yaw = new model::jointRotation::UnBounded (position);
+      yaw->name ("foot");
       root->addChildJoint (yaw);
       device->controlComputation (model::Device::JOINT_POSITION);
       return device;
