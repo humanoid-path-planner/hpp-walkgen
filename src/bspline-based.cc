@@ -421,49 +421,37 @@ namespace hpp {
       // Loop
       std::size_t i=0, j=0;
       while (true) {
+        // Previous trajectory is a double support trajectory
 	++j;
 	// Single support
 	firstFoot->appendPath (Step::create
-			       (footPrints_ [2*i], footPrints_ [2*i+2],
-				0., stepHeights_ [2*i],
+			       (footPrints_ [i], footPrints_ [i+2],
+				0., stepHeights_ [i],
 				tau_ [j+1] - tau_ [j]));
 	secondFoot->appendPath (SupportFoot::create
-				(footPrints_ [2*i+1], 0,
+				(footPrints_ [i+1], 0,
 				 tau_ [j+1] - tau_ [j]));
 	
 	++j;
-	if (2*i+2 == footPrints_.size ()) break;
 	// Double support
 	firstFoot->appendPath (SupportFoot::create
-			       (footPrints_ [2*i+2], 0,
+			       (footPrints_ [i+2], 0,
 				tau_ [j+1] - tau_ [j]));
 	secondFoot->appendPath (SupportFoot::create
-				(footPrints_ [2*i+1], 0,
+				(footPrints_ [i+1], 0,
 				 tau_ [j+1] - tau_ [j]));
-	++i; ++j;
-	// Single support
-	firstFoot->appendPath (SupportFoot::create
-			       (footPrints_ [2*i], 0.,
-				tau_ [j+1] - tau_ [j]));
-	secondFoot->appendPath (Step::create
-				(footPrints_ [2*i-1], footPrints_ [2*i+1],
-				 0, stepHeights_ [2*i-1],
-				 tau_ [j+1] - tau_ [j]));
-	++j;
-	if (2*i+2 == footPrints_.size ()) break;
-	// Double support
-	firstFoot->appendPath (SupportFoot::create
-			       (footPrints_ [2*i], 0,
-				tau_ [j+1] - tau_ [j]));
-	secondFoot->appendPath (SupportFoot::create
-				(footPrints_ [2*i+1], 0,
-				 tau_ [j+1] - tau_ [j]));
+	++i;
+        /// Swap the foot
+        firstFoot.swap (secondFoot);
+
+        /// Check if this step was the last one
+	if (i+2 == footPrints_.size ()) break;
       }
       // Last, both feet remain static
-      firstFoot->appendPath (SupportFoot::create (footPrints_ [2*i], 0,
-						  tau_ [j+1] - tau_ [j]));
-      secondFoot->appendPath (SupportFoot::create (footPrints_ [2*i+1], 0,
-						   tau_ [j+1] - tau_ [j]));
+      // firstFoot->appendPath (SupportFoot::create (footPrints_ [i], 0,
+						  // tau_ [j+1] - tau_ [j]));
+      // secondFoot->appendPath (SupportFoot::create (footPrints_ [i+1], 0,
+						   // tau_ [j+1] - tau_ [j]));
     }
 
   } // namespace walkgen
