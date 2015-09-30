@@ -33,9 +33,24 @@ namespace hpp {
       Transform3f position;
       model::JointPtr_t root = new model::JointTranslation <3> (position);
       device->rootJoint (root);
+
+      /// Rotate around z:
+      fcl::Matrix3f R;
+      R (0,0) = 0; R (0,1) = 0; R (0,2) =-1;
+      R (1,0) = 0; R (1,1) = 1; R (1,2) = 0;
+      R (2,0) = 1; R (2,1) = 0; R (2,2) = 0;
+
+      position.setRotation (R);
       model::JointPtr_t yaw = new model::jointRotation::UnBounded (position);
-      yaw->name ("foot");
       root->addChildJoint (yaw);
+
+      R (0,0) = 1; R (0,1) = 0; R (0,2) = 0;
+      R (1,0) = 0; R (1,1) = 1; R (1,2) = 0;
+      R (2,0) = 0; R (2,1) = 0; R (2,2) = 1;
+      position.setRotation (R);
+      model::JointPtr_t foot_print = new model::JointAnchor (position);
+      foot_print->name ("foot");
+      yaw->addChildJoint (foot_print);
       device->controlComputation (model::Device::JOINT_POSITION);
       return device;
     }
