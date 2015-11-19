@@ -130,8 +130,8 @@ namespace hpp {
       orientation_ (position.orientation), configuration_ (footConfigSize)
     {
       configuration_.segment <2> (0) = position.position;
-      configuration_.segment <2> (2) = position.orientation;
-      configuration_ [4] = footHeight;
+      configuration_ [2] = footHeight;
+      configuration_.segment <2> (3) = position.orientation;
     }
 
     bool SupportFoot::impl_compute (ConfigurationOut_t configuration,
