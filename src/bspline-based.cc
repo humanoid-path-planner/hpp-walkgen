@@ -23,6 +23,7 @@
 #include <hpp/core/path-vector.hh>
 #include <hpp/walkgen/bspline-based.hh>
 #include <hpp/walkgen/foot-trajectory.hh>
+#include <hpp/constraints/macros.hh>
 
 namespace hpp {
   namespace walkgen {
@@ -303,6 +304,7 @@ namespace hpp {
 	// constraints are defined
 	Eigen::JacobiSVD <matrix_t> svd (A0_, Eigen::ComputeThinU |
 					 Eigen::ComputeFullV);
+        HPP_DEBUG_SVDCHECK (svd);
 	hppDout (info, "A0 singular values: "
 		 << svd.singularValues ().transpose ());
 	vector_t X_00 = svd.solve (c0_);
@@ -313,6 +315,7 @@ namespace hpp {
 	Eigen::JacobiSVD <matrix_t> svd1 (V0THi*V.rightCols (m_-4-rank),
 					  Eigen::ComputeThinU |
 					  Eigen::ComputeThinV);
+        HPP_DEBUG_SVDCHECK (svd1);
 	hppDout (info, "V0^T H0 V0 singular values: "
 		 << svd1.singularValues ().transpose ());
 	vector_t rhs0 (V.rightCols (m_-4-rank).transpose ()*b0_ - V0THi*X_00);
@@ -331,6 +334,7 @@ namespace hpp {
       } else {
 	Eigen::JacobiSVD <matrix_t> svd2 (H0_, Eigen::ComputeThinU |
 					 Eigen::ComputeThinV);
+        HPP_DEBUG_SVDCHECK (svd2);
 	hppDout (info, "H0 singular values: "
 		 << svd2.singularValues ().transpose ());
 	X0 = svd2.solve (b0_);
