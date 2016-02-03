@@ -54,10 +54,10 @@ ADD_REQUIRED_DEPENDENCY(roboptim-trajectory >= 1)
 
 SEARCH_FOR_BOOST ()
 
-PKG_CONFIG_APPEND_LIBS("hpp-walkgen")
-
 ADD_SUBDIRECTORY(src)
 ADD_SUBDIRECTORY(tests)
+
+PKG_CONFIG_APPEND_LIBS("hpp-walkgen")
 
 INSTALL(FILES doc/walkgen.pdf
   DESTINATION
