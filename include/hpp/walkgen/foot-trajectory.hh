@@ -19,12 +19,13 @@
 #ifndef HPP_WALKGEN_FOOT_TRAJECTORY_HH
 # define HPP_WALKGEN_FOOT_TRAJECTORY_HH
 
+# include <stdexcept>
 # include <hpp/core/path.hh>
 # include <hpp/walkgen/foot-print.hh>
 
 namespace hpp {
   namespace walkgen {
-    model::DevicePtr_t createFootDevice ();
+    DevicePtr_t createFootDevice ();
 
     /// A step as a trajectory of a flying foot
     ///

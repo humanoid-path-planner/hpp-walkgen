@@ -16,50 +16,60 @@
 // hpp-walkgen  If not, see
 // <http://www.gnu.org/licenses/>.
 
-#include <hpp/model/joint.hh>
 #include <hpp/walkgen/foot-trajectory.hh>
-#include <hpp/model/device.hh>
-#include <hpp/model/joint-configuration.hh>
+
+#include <pinocchio/multibody/model.hpp>
+
+#include <hpp/pinocchio/joint.hh>
+#include <hpp/pinocchio/device.hh>
 
 namespace hpp {
   namespace walkgen {
+    se3::JointModelRUBZ makeSO2 ()
+    {
+      se3::JointModelRUBZ j;
+      j.i_q = 0;
+      j.i_v = 0;
+      return j;
+    }
+
+    static se3::SE3 Id = Transform3f::Identity();
     static size_type footConfigSize = 5;
     static size_type footNumberDof = 4;
-    static model::rotationJointConfig::UnBounded SO2;
+    static se3::JointModelRUBZ SO2 = makeSO2();
 
-    model::DevicePtr_t createFootDevice ()
+    DevicePtr_t createFootDevice ()
     {
-      model::DevicePtr_t device = model::Device::create ("foot");
-      Transform3f position;
-      model::JointPtr_t root = new model::JointTranslation <3> (position);
-      device->rootJoint (root);
+      DevicePtr_t device = pinocchio::Device::create ("foot");
+      se3::Model& model = device->model();
+      se3::JointIndex idx;
+      idx = model.addJoint(0, se3::JointModelTranslation(), Id, "xyz");
+      model.appendBodyToJoint(idx, se3::Inertia::Random(), Id, "xyz_body");
 
-      /// Rotate around z:
-      fcl::Matrix3f R;
-      R (0,0) = 0; R (0,1) = 0; R (0,2) =-1;
-      R (1,0) = 0; R (1,1) = 1; R (1,2) = 0;
-      R (2,0) = 1; R (2,1) = 0; R (2,2) = 0;
+      idx = model.addJoint(idx, se3::JointModelRUBZ(), Transform3f::Identity(), "foot");
+      model.appendBodyToJoint(idx, se3::Inertia::Random(), Id, "foot");
 
-      position.setRotation (R);
-      model::JointPtr_t yaw = new model::jointRotation::UnBounded (position);
-      root->addChildJoint (yaw);
+      // FIXME this can probably go away
+      // model.addFrame(se3::Frame ("foot", idx, Id, se3::FIXED_JOINT));
+      device->createData();
 
-      R (0,0) = 1; R (0,1) = 0; R (0,2) = 0;
-      R (1,0) = 0; R (1,1) = 1; R (1,2) = 0;
-      R (2,0) = 0; R (2,1) = 0; R (2,2) = 1;
-      position.setRotation (R);
-      model::JointPtr_t foot_print = new model::JointAnchor (position);
-      foot_print->name ("foot");
-      yaw->addChildJoint (foot_print);
-      device->controlComputation (model::Device::JOINT_POSITION);
+      device->controlComputation (pinocchio::Device::JOINT_POSITION);
+      Configuration_t q(footConfigSize);
+      q << 0, 0, 0, 1, 0;
+      device->currentConfiguration();
+      device->computeForwardKinematics();
+
+      assert(device->getJointByName("foot")->currentTransformation().isIdentity());
+
+      assert (device->configSize() == footConfigSize);
+      assert (device->numberDof() == footNumberDof);
       return device;
     }
 
     value_type Step::computeAngle (const FootPrint& start, const FootPrint& end)
       const
     {
-      vector1_t result;
-      SO2.difference (end.orientation, start.orientation, 0, 0, result);
+      vector1_t result (SO2.difference (end.orientation, start.orientation));
       return result [0];
     }
 
@@ -109,8 +119,7 @@ namespace hpp {
       // Orientation
       vector1_t omega;
       omega [0] = th*th*(omega2_ + th*omega3_);
-      SO2.integrate (initialOrientation_, omega, 0, 0,
-		     configuration.segment <2> (3));
+      configuration.tail <2> () = SO2.integrate (initialOrientation_, omega);
       return true;
     }
 
@@ -129,17 +138,17 @@ namespace hpp {
       h0_ (position.position), v0_ (footHeight),
       orientation_ (position.orientation), configuration_ (footConfigSize)
     {
-      configuration_.segment <2> (0) = position.position;
-      configuration_ [2] = footHeight;
-      configuration_.segment <2> (3) = position.orientation;
+      configuration_.head <2> () = position.position;
+      configuration_ [2]         = footHeight;
+      configuration_.tail <2> () = position.orientation;
     }
 
     bool SupportFoot::impl_compute (ConfigurationOut_t configuration,
 				    value_type) const
     {
       configuration.head <2> () = h0_;
-      configuration [2] = v0_;
-      configuration.segment <2> (3) = orientation_;
+      configuration [2]         = v0_;
+      configuration.tail <2> () = orientation_;
       return true;
     }
 

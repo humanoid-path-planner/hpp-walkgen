@@ -44,9 +44,7 @@ namespace hpp {
     typedef Eigen::Matrix <value_type, 2, 1> vector2_t;
     typedef Eigen::Matrix <value_type, 1, 1> vector1_t;
 
-    // from hpp-model
-    typedef model::Transform3f Transform3f;
-    // from hpp-core
+    typedef core::Transform3f Transform3f;
     typedef core::Path Path;
     typedef core::PathPtr_t PathPtr_t;
     typedef core::PathVectorPtr_t PathVectorPtr_t;
@@ -54,6 +52,7 @@ namespace hpp {
     typedef core::ConfigurationOut_t ConfigurationOut_t;
     typedef core::Configuration_t Configuration_t;
     typedef core::ConstraintSetPtr_t ConstraintSetPtr_t;
+    typedef core::DevicePtr_t DevicePtr_t;
   } // namespace walkgen
 } // namespace hpp
 

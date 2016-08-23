@@ -255,12 +255,12 @@ namespace hpp {
 	return rightFootTraj_;
       }
 
-      model::DevicePtr_t leftFoot () const
+      DevicePtr_t leftFoot () const
       {
         return leftFoot_;
       }
 
-      model::DevicePtr_t rightFoot () const
+      DevicePtr_t rightFoot () const
       {
         return rightFoot_;
       }
@@ -313,8 +313,8 @@ namespace hpp {
       BoundaryConditions_t boundaryConditions_;
       vector2_t zmpRefInit_;
       vector2_t zmpRefEnd_;
-      model::DevicePtr_t leftFoot_;
-      model::DevicePtr_t rightFoot_;
+      DevicePtr_t leftFoot_;
+      DevicePtr_t rightFoot_;
       mutable CubicBSplinePtr_t comTrajectory_;
       mutable matrix_t H0_;
       mutable vector_t b0_, b1_;
