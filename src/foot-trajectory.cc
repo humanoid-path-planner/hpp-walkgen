@@ -44,10 +44,14 @@ namespace hpp {
       se3::Model& model = device->model();
       se3::JointIndex idx;
       idx = model.addJoint(0, se3::JointModelTranslation(), Id, "xyz");
-      model.appendBodyToJoint(idx, se3::Inertia::Random(), Id, "xyz_body");
+      model.addJointFrame(idx);
+      model.appendBodyToJoint(idx, se3::Inertia::Random(), Id);
+      model.addBodyFrame("xyz_body", idx, Id);
 
       idx = model.addJoint(idx, se3::JointModelRUBZ(), Transform3f::Identity(), "foot");
-      model.appendBodyToJoint(idx, se3::Inertia::Random(), Id, "foot");
+      model.addJointFrame(idx);
+      model.appendBodyToJoint(idx, se3::Inertia::Random(), Id);
+      model.addBodyFrame("foot_body", idx, Id);
 
       // FIXME this can probably go away
       // model.addFrame(se3::Frame ("foot", idx, Id, se3::FIXED_JOINT));

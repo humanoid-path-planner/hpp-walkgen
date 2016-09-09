@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE (base_functions)
       const PiecewisePoly3& P = *it1;
       value_type t;
       for (size_type i=0; i<7; ++i) {
-	t = ((6-i)*P.lower + i*P.upper)/6.;
+	t = ((value_type)(6-i)*P.lower + (value_type)i*P.upper)/6.;
 	if (!std::isnan (P [i])) {
 	  std::cout << t << "\t" << P [i] << std::endl;
 	}
