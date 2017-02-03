@@ -48,9 +48,9 @@ SET(${PROJECT_NAME}_HEADERS
 
 ADD_REQUIRED_DEPENDENCY(eigen3 >= 3.2)
 ADD_REQUIRED_DEPENDENCY(hpp-util >= 3)
-ADD_REQUIRED_DEPENDENCY(hpp-constraints >= 3) # For hpp/constraints/macros.hh
-ADD_REQUIRED_DEPENDENCY(hpp-pinocchio >= 3)
-ADD_REQUIRED_DEPENDENCY(hpp-core >= 3)
+ADD_REQUIRED_DEPENDENCY(hpp-constraints >= 4)
+ADD_REQUIRED_DEPENDENCY(hpp-pinocchio >= 4)
+ADD_REQUIRED_DEPENDENCY(hpp-core >= 4)
 ADD_REQUIRED_DEPENDENCY(roboptim-trajectory >= 1)
 
 SEARCH_FOR_BOOST ()
