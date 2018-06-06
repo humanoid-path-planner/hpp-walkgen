@@ -20,23 +20,18 @@
 
 #include <pinocchio/multibody/model.hpp>
 
+#include <hpp/util/exception-factory.hh>
+
 #include <hpp/pinocchio/joint.hh>
 #include <hpp/pinocchio/device.hh>
+#include <hpp/pinocchio/liegroup/special-orthogonal.hh>
 
 namespace hpp {
   namespace walkgen {
-    se3::JointModelRUBZ makeSO2 ()
-    {
-      se3::JointModelRUBZ j;
-      j.i_q = 0;
-      j.i_v = 0;
-      return j;
-    }
-
     static se3::SE3 Id = Transform3f::Identity();
     static size_type footConfigSize = 5;
     static size_type footNumberDof = 4;
-    static se3::JointModelRUBZ SO2 = makeSO2();
+    static hpp::pinocchio::liegroup::SpecialOrthogonalOperation<2> SO2;
 
     DevicePtr_t createFootDevice ()
     {
