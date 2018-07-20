@@ -301,8 +301,9 @@ BOOST_AUTO_TEST_CASE (six_footPrints)
   std::cout << "plot '-' using 1:2 title 'x left foot' with lines, '-' using 1:3 title 'y left foot' with lines\n";
   for (double t = lf->timeRange ().first;
        t <= lf->timeRange ().second; t+=dt) {
-    vector_t ql = (*lf) (t);
-    vector_t qr = (*rf) (t);
+    bool success;
+    vector_t ql = (*lf) (t, success);
+    vector_t qr = (*rf) (t, success);
     std::cout << t << "\t" << ql [0] << "\t" << ql [1] << "\t"
 	      << qr [0] << "\t" << qr [1] << std::endl;
   }
