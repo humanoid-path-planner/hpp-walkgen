@@ -52,7 +52,7 @@ ADD_REQUIRED_DEPENDENCY("hpp-util >= 3")
 ADD_REQUIRED_DEPENDENCY("hpp-constraints >= 4")
 ADD_REQUIRED_DEPENDENCY("hpp-pinocchio >= 4")
 ADD_REQUIRED_DEPENDENCY("hpp-core >= 4")
-ADD_REQUIRED_DEPENDENCY("roboptim-trajectory >= 1")
+ADD_REQUIRED_DEPENDENCY("roboptim-trajectory >= 3.2")
 
 SEARCH_FOR_BOOST ()
 
