@@ -28,9 +28,9 @@ namespace hpp {
   namespace walkgen {
 
     typedef roboptim::trajectory::Polynomial3 Polynomial3;
-    typedef roboptim::trajectory::CubicBSpline::basisPolynomialsVector_t
+    typedef roboptim::trajectory::CubicBSpline::polynomials3vectors_t
     polynomials3vectors_t;
-    typedef roboptim::trajectory::CubicBSpline::basisPolynomials_t
+    typedef roboptim::trajectory::CubicBSpline::polynomials3vector_t
     polynomials3vector_t;
 
     typedef Eigen::Matrix <value_type, 7, 1> vector7_t;
