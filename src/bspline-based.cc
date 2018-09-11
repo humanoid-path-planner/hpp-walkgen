@@ -27,6 +27,13 @@
 
 namespace hpp {
   namespace walkgen {
+    typedef
+#ifdef ROBOPTIM_TRAJECTORY_32
+      vector_t
+#else
+      std::vector<value_type>
+#endif
+      knots_t;
     value_type SplineBased::gravity = 9.81;
     size_type SplineBased::l = 3;
 
@@ -76,7 +83,7 @@ namespace hpp {
 	throw std::runtime_error (oss.str ());
       }
       // build knot vector
-      vector_t knots (m_);
+      knots_t knots (m_);
       double tau0 = tau_ [0];
       knots [0] = tau0 - 3.; knots [1] = tau0 - 2.;  knots [2] = tau0 - 1.;
       for (size_type k=0; k < (size_type)(2*p-3); ++k) {
@@ -160,7 +167,7 @@ namespace hpp {
       value_type un_sur_omega_2 = height_ / gravity;
       const polynomials3vectors_t& bases = comTrajectory_->basisPolynomials ();
       assert ((size_type)bases.size () == m_ - 4);
-      const vector_t& knots = comTrajectory_->knotVector ();
+      const knots_t& knots = comTrajectory_->knotVector ();
       Z_.clear ();
       for (std::size_t iBasis = 0; iBasis < bases.size (); ++iBasis) {
 	const polynomials3vector_t& basis = bases [iBasis];
@@ -199,7 +206,7 @@ namespace hpp {
     void SplineBased::defineProblem () const
     {
       std::size_t p = footPrints_.size ();
-      const vector_t& knots = comTrajectory_->knotVector ();
+      const knots_t& knots = comTrajectory_->knotVector ();
       // Fill H0_
       buildPolynomialVector ();
       H0_.setZero ();
