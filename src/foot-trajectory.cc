@@ -52,7 +52,7 @@ namespace hpp {
       // model.addFrame(se3::Frame ("foot", idx, Id, se3::FIXED_JOINT));
       device->createData();
 
-      device->controlComputation (pinocchio::Device::JOINT_POSITION);
+      device->controlComputation (hpp::pinocchio::JOINT_POSITION);
       Configuration_t q(footConfigSize);
       q << 0, 0, 0, 1, 0;
       device->currentConfiguration();
