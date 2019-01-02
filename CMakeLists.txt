@@ -24,6 +24,7 @@ INCLUDE(cmake/base.cmake)
 INCLUDE(cmake/boost.cmake)
 INCLUDE(cmake/eigen.cmake)
 INCLUDE(cmake/test.cmake)
+INCLUDE(cmake/hpp.cmake)
 
 SET(PROJECT_NAME hpp-walkgen)
 SET(PROJECT_DESCRIPTION
@@ -31,14 +32,8 @@ SET(PROJECT_DESCRIPTION
   )
 SET(PROJECT_URL "")
 
-SETUP_PROJECT()
+SETUP_HPP_PROJECT()
 SEARCH_FOR_BOOST()
-
-# Activate hpp-util logging if requested
-SET (HPP_DEBUG FALSE CACHE BOOL "trigger hpp-util debug output")
-IF (HPP_DEBUG)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHPP_DEBUG")
-ENDIF()
 
 SET(${PROJECT_NAME}_HEADERS
   include/hpp/walkgen/bspline-based.hh
@@ -71,4 +66,4 @@ INSTALL(FILES doc/walkgen.pdf
   ${CMAKE_INSTALL_DATAROOTDIR}/doc/${PROJECT_NAME}/doxygen-html/figures
   )
 
-SETUP_PROJECT_FINALIZE()
+SETUP_HPP_PROJECT_FINALIZE()
