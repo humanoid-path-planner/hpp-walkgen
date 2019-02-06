@@ -26,11 +26,12 @@ INCLUDE(cmake/eigen.cmake)
 INCLUDE(cmake/test.cmake)
 INCLUDE(cmake/hpp.cmake)
 
+SET(PROJECT_ORG humanoid-path-planner)
 SET(PROJECT_NAME hpp-walkgen)
 SET(PROJECT_DESCRIPTION
   "Walk generator for hpp framework"
   )
-SET(PROJECT_URL "")
+SET(PROJECT_URL "https://github.com/${PROJECT_ORG}/${PROJECT_NAME}")
 
 OPTION(INSTALL_DOCUMENTATION "Generate and install the documentation" ON)
 
