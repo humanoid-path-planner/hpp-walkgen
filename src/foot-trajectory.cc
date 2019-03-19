@@ -23,12 +23,16 @@
 #include <hpp/util/exception-factory.hh>
 
 #include <hpp/pinocchio/joint.hh>
+#include <hpp/pinocchio/joint-collection.hh>
 #include <hpp/pinocchio/device.hh>
 #include <hpp/pinocchio/liegroup/special-orthogonal.hh>
 
 namespace hpp {
   namespace walkgen {
-    static se3::SE3 Id = Transform3f::Identity();
+    using pinocchio::Model;
+    using pinocchio::JointCollection;
+
+    static pinocchio::SE3 Id = Transform3f::Identity();
     static size_type footConfigSize = 5;
     static size_type footNumberDof = 4;
     static hpp::pinocchio::liegroup::SpecialOrthogonalOperation<2> SO2;
@@ -36,20 +40,20 @@ namespace hpp {
     DevicePtr_t createFootDevice ()
     {
       DevicePtr_t device = pinocchio::Device::create ("foot");
-      se3::Model& model = device->model();
-      se3::JointIndex idx;
-      idx = model.addJoint(0, se3::JointModelTranslation(), Id, "xyz");
+      pinocchio::Model& model = device->model();
+      pinocchio::JointIndex idx;
+      idx = model.addJoint(0, JointCollection::JointModelTranslation(), Id, "xyz");
       model.addJointFrame(idx);
-      model.appendBodyToJoint(idx, se3::Inertia::Random(), Id);
+      model.appendBodyToJoint(idx, ::pinocchio::Inertia::Random(), Id);
       model.addBodyFrame("xyz_body", idx, Id);
 
-      idx = model.addJoint(idx, se3::JointModelRUBZ(), Transform3f::Identity(), "foot");
+      idx = model.addJoint(idx, JointCollection::JointModelRUBZ(), Transform3f::Identity(), "foot");
       model.addJointFrame(idx);
-      model.appendBodyToJoint(idx, se3::Inertia::Random(), Id);
+      model.appendBodyToJoint(idx, ::pinocchio::Inertia::Random(), Id);
       model.addBodyFrame("foot_body", idx, Id);
 
       // FIXME this can probably go away
-      // model.addFrame(se3::Frame ("foot", idx, Id, se3::FIXED_JOINT));
+      // model.addFrame(::pinocchio::Frame ("foot", idx, Id, ::pinocchio::FIXED_JOINT));
       device->createData();
 
       device->controlComputation (hpp::pinocchio::JOINT_POSITION);
