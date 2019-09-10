@@ -21,6 +21,7 @@
 
 # include<Eigen/StdVector>
 
+# include <pinocchio/fwd.hpp>
 # include <roboptim/trajectory/cubic-b-spline.hh>
 # include <hpp/walkgen/foot-print.hh>
 

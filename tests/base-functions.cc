@@ -16,6 +16,7 @@
 // hpp-walkgen  If not, see
 // <http://www.gnu.org/licenses/>.
 
+#include <pinocchio/fwd.hpp>
 #include <boost/format.hpp>
 #include <hpp/walkgen/bspline-based.hh>
 

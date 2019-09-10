@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <pinocchio/fwd.hpp>
 #include <roboptim/trajectory/cubic-b-spline.hh>
 #include <hpp/util/debug.hh>
 #include <hpp/core/path-vector.hh>
