@@ -17,21 +17,20 @@
 # hpp-walkgen  If not, see
 # <http://www.gnu.org/licenses/>.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+
+SET(PROJECT_NAME hpp-walkgen)
+SET(PROJECT_DESCRIPTION "Walk generator for hpp framework")
 
 SET(CXX_DISABLE_WERROR TRUE)
-INCLUDE(cmake/base.cmake)
+INCLUDE(cmake/hpp.cmake)
 INCLUDE(cmake/boost.cmake)
 INCLUDE(cmake/eigen.cmake)
 INCLUDE(cmake/test.cmake)
-INCLUDE(cmake/hpp.cmake)
 
-SET(PROJECT_NAME hpp-walkgen)
-SET(PROJECT_DESCRIPTION
-  "Walk generator for hpp framework"
-  )
+COMPUTE_PROJECT_ARGS(PROJECT_ARGS LANGUAGES CXX)
+PROJECT(${PROJECT_NAME} ${PROJECT_ARGS})
 
-SETUP_HPP_PROJECT()
 SEARCH_FOR_BOOST()
 
 SET(${PROJECT_NAME}_HEADERS
@@ -66,5 +65,3 @@ IF(INSTALL_DOCUMENTATION)
     ${CMAKE_INSTALL_DATAROOTDIR}/doc/${PROJECT_NAME}/doxygen-html/figures
     )
 ENDIF(INSTALL_DOCUMENTATION)
-
-SETUP_HPP_PROJECT_FINALIZE()
