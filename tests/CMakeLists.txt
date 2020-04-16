@@ -1,6 +1,6 @@
 #
-# Copyright (c) 2015 CNRS
-# Authors: Florent Lamiraux
+# Copyright (c) 2015, 2020 CNRS
+# Authors: Florent Lamiraux, Guilhem Saurel
 #
 #
 # This file is part of hpp-walkgen
@@ -17,8 +17,6 @@
 # hpp-walkgen  If not, see
 # <http://www.gnu.org/licenses/>.
 
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src)
 
 # ADD_TESTCASE(NAME)
 # ------------------------
@@ -28,23 +26,11 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src)
 # This macro will create a binary from `NAME.cc', link it against
 # Boost and add it to the test suite.
 #
-MACRO(ADD_TESTCASE NAME GENERATED)
-  IF (${GENERATED} STREQUAL TRUE)
-    ADD_UNIT_TEST(${NAME} ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.cc)
-  ELSE()
-    ADD_UNIT_TEST(${NAME} ${NAME}.cc)
-  ENDIF()
-
-  PKG_CONFIG_USE_DEPENDENCY(${NAME} hpp-core)
-  PKG_CONFIG_USE_DEPENDENCY(${NAME} roboptim-trajectory)
-  PKG_CONFIG_USE_DEPENDENCY(${NAME} hpp-util)
-
-  # Link against Boost and project library.
-  TARGET_LINK_LIBRARIES(${NAME}
-    ${Boost_LIBRARIES} hpp-walkgen
-    )
+MACRO(ADD_TESTCASE NAME)
+  ADD_UNIT_TEST(${NAME} ${NAME}.cc)
+  TARGET_LINK_LIBRARIES(${NAME} ${PROJECT_NAME} ${Boost_LIBRARIES})
 ENDMACRO(ADD_TESTCASE)
 
-ADD_TESTCASE(six-steps FALSE)
-ADD_TESTCASE(base-functions FALSE)
-ADD_TESTCASE(twenty-steps FALSE)
+ADD_TESTCASE(six-steps)
+ADD_TESTCASE(base-functions)
+ADD_TESTCASE(twenty-steps)
