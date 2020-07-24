@@ -1,3 +1,5 @@
                                                                 -*- outline -*-
+New in 4.10.0
+* Add package.xml.
 New in 4.6.0
 * Synchronize cmake submodule.
