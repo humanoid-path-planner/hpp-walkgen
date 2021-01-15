@@ -302,8 +302,8 @@ BOOST_AUTO_TEST_CASE (six_footPrints)
   for (double t = lf->timeRange ().first;
        t <= lf->timeRange ().second; t+=dt) {
     bool success;
-    vector_t ql = (*lf) (t, success);
-    vector_t qr = (*rf) (t, success);
+    vector_t ql = lf->eval (t, success);
+    vector_t qr = rf->eval (t, success);
     std::cout << t << "\t" << ql [0] << "\t" << ql [1] << "\t"
 	      << qr [0] << "\t" << qr [1] << std::endl;
   }
