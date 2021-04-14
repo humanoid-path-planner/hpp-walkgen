@@ -27,13 +27,13 @@
 namespace hpp {
   namespace walkgen {
     typedef roboptim::trajectory::CubicBSpline CubicBSpline;
-    typedef boost::shared_ptr <CubicBSpline> CubicBSplinePtr_t;
+    typedef std::shared_ptr <CubicBSpline> CubicBSplinePtr_t;
     HPP_PREDEF_CLASS (SplineBased);
-    typedef boost::shared_ptr <SplineBased> SplineBasedPtr_t;
+    typedef std::shared_ptr <SplineBased> SplineBasedPtr_t;
     HPP_PREDEF_CLASS (Step);
-    typedef boost::shared_ptr <Step> StepPtr_t;
+    typedef std::shared_ptr <Step> StepPtr_t;
     HPP_PREDEF_CLASS (SupportFoot);
-    typedef boost::shared_ptr <SupportFoot> SupportFootPtr_t;
+    typedef std::shared_ptr <SupportFoot> SupportFootPtr_t;
     class FootPrint;
 
     typedef double value_type;
